@@ -1,0 +1,10 @@
+/* ═══════════════════════════════════════════════════════════════
+   Main Stylesheet
+   Importiert alle Component-Styles in korrekter Reihenfolge
+   ═══════════════════════════════════════════════════════════════ */
+
+@import url('./_theme.css');
+@import url('./_animations.css');
+@import url('./_components.css');
+
+/* Hier können project-spezifische Styles rein */

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D4RKST3R Stream Overlays</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #050507;
+      color: #e8e8e8;
+      font-family: 'Courier New', monospace;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      letter-spacing: 4px;
+      color: #ff8800;
+      font-size: 48px;
+    }
+
+    .subtitle {
+      text-align: center;
+      margin-bottom: 40px;
+      color: rgba(232, 232, 232, 0.5);
+      letter-spacing: 2px;
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      background: rgba(255, 136, 0, 0.05);
+      border: 1px solid rgba(255, 136, 0, 0.25);
+      padding: 20px;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      border-color: rgba(255, 136, 0, 0.6);
+      box-shadow: 0 0 15px rgba(255, 136, 0, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .card-icon {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: 2px;
+      color: #ff8800;
+    }
+
+    .card-desc {
+      font-size: 13px;
+      color: rgba(232, 232, 232, 0.7);
+      margin-bottom: 15px;
+      line-height: 1.6;
+      flex: 1;
+    }
+
+    .card-link {
+      display: inline-block;
+      padding: 8px 16px;
+      border: 1px solid rgba(255, 136, 0, 0.25);
+      color: #ff8800;
+      text-decoration: none;
+      font-size: 12px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      transition: all 0.2s ease;
+      align-self: flex-start;
+    }
+
+    .card-link:hover {
+      background: rgba(255, 136, 0, 0.1);
+      border-color: #ff8800;
+    }
+
+    .info-box {
+      background: rgba(255, 136, 0, 0.05);
+      border: 1px solid rgba(255, 136, 0, 0.25);
+      padding: 20px;
+      margin-top: 40px;
+      border-radius: 2px;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .info-title {
+      color: #ff8800;
+      font-weight: 700;
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    code {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 2px 6px;
+      border-radius: 2px;
+      font-size: 12px;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 60px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 136, 0, 0.1);
+      font-size: 12px;
+      color: rgba(232, 232, 232, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎮 D4RKST3R STREAM OVERLAYS</h1>
+    <p class="subtitle">Professional Game Design Stream Setup</p>
+
+    <div class="grid">
+      <a href="screens/goal-progress.html" class="card">
+        <div class="card-icon">💰</div>
+        <div class="card-title">GOAL PROGRESS</div>
+        <div class="card-desc">Zeigt den Progress zu Sub/Tip Goals mit animierter Progress-Bar</div>
+        <span class="card-link">ÖFFNEN →</span>
+      </a>
+
+      <a href="screens/live-stats.html" class="card">
+        <div class="card-icon">📊</div>
+        <div class="card-title">LIVE STATS</div>
+        <div class="card-desc">Live Dashboard mit Follower, Viewer, Tips und Subs Countern</div>
+        <span class="card-link">ÖFFNEN →</span>
+      </a>
+
+      <a href="screens/design-showcase.html" class="card">
+        <div class="card-icon">🎨</div>
+        <div class="card-title">DESIGN SHOWCASE</div>
+        <div class="card-desc">Community Design Galerie mit Carousel und detailliertem Info-Panel</div>
+        <span class="card-link">ÖFFNEN →</span>
+      </a>
+
+      <a href="screens/credits.html" class="card">
+        <div class="card-icon">🏆</div>
+        <div class="card-title">CREDITS</div>
+        <div class="card-desc">Thank You Screen mit Top Supporter und Stream Stats</div>
+        <span class="card-link">ÖFFNEN →</span>
+      </a>
+    </div>
+
+    <div class="info-box">
+      <div class="info-title">📖 Verwendung in OBS</div>
+      <p>
+        Nutze diese URLs in deinen OBS Browser Sources:
+      </p>
+      <p style="margin-top: 10px;">
+        <strong>Goal Progress:</strong><br>
+        <code>https://yourusername.github.io/d4rkst3r-stream-overlays/screens/goal-progress.html</code>
+      </p>
+      <p style="margin-top: 10px;">
+        <strong>Live Stats:</strong><br>
+        <code>https://yourusername.github.io/d4rkst3r-stream-overlays/screens/live-stats.html</code>
+      </p>
+      <p style="margin-top: 10px;">
+        <strong>Design Showcase:</strong><br>
+        <code>https://yourusername.github.io/d4rkst3r-stream-overlays/screens/design-showcase.html</code>
+      </p>
+      <p style="margin-top: 10px;">
+        <strong>Credits:</strong><br>
+        <code>https://yourusername.github.io/d4rkst3r-stream-overlays/screens/credits.html</code>
+      </p>
+    </div>
+
+    <div class="info-box">
+      <div class="info-title">🚀 Features</div>
+      <ul style="margin-left: 20px; margin-top: 10px;">
+        <li>✅ Dark Theme mit Orange Accents (GameDesign Vibe)</li>
+        <li>✅ Smooth Animationen & Übergänge</li>
+        <li>✅ StreamElements Integration Ready</li>
+        <li>✅ Responsive Design</li>
+        <li>✅ Optimiert für 1920x1080</li>
+        <li>✅ Custom CSS Theme System</li>
+        <li>✅ Reusable UI Components</li>
+      </ul>
+    </div>
+
+    <div class="info-box">
+      <div class="info-title">📝 Customization</div>
+      <p>
+        Alle Dateien sind im GitHub Repo enthalten. Du kannst:
+      </p>
+      <ul style="margin-left: 20px; margin-top: 10px;">
+        <li>Farben in <code>styles/_theme.css</code> anpassen</li>
+        <li>Texte in den Screen-Dateien ändern</li>
+        <li>Eigene Designs/Bilder hinzufügen</li>
+        <li>Animationen anpassen</li>
+        <li>Neue Screens erstellen</li>
+      </ul>
+    </div>
+
+    <div class="footer">
+      <p>Made with ❤️ for D4RKST3R GameDesign Streams</p>
+      <p>© 2026 | <a href="https://github.com" style="color: #ff8800; text-decoration: none;">GitHub Repo</a></p>
+    </div>
+  </div>
+</body>
+</html>

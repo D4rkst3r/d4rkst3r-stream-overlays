@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Credits - D4RKST3R</title>
+  <link rel="stylesheet" href="../styles/main.css">
+  <style>
+    .credits-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: var(--spacing-xl);
+      padding: var(--spacing-xl);
+      background: var(--color-bg);
+      position: relative;
+      overflow-y: auto;
+    }
+
+    .credits-container::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      opacity: var(--opacity-subtle);
+      pointer-events: none;
+      background-image:
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 79px,
+          var(--color-accent) 79px,
+          var(--color-accent) 80px
+        ),
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 79px,
+          var(--color-accent) 79px,
+          var(--color-accent) 80px
+        );
+      z-index: 0;
+    }
+
+    .credits-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-xl);
+      max-width: 800px;
+    }
+
+    .credits-main-title {
+      font-size: var(--font-size-3xl);
+      font-weight: 700;
+      letter-spacing: var(--letter-spacing-tight);
+      color: var(--color-text-primary);
+      text-align: center;
+      animation: slideInDown var(--duration-base) ease-out;
+    }
+
+    .credits-subtitle {
+      font-size: var(--font-size-lg);
+      letter-spacing: var(--letter-spacing-wide);
+      color: var(--color-text-muted);
+      text-align: center;
+    }
+
+    .divider-full {
+      width: 320px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+      margin: var(--spacing-lg) 0;
+    }
+
+    /* Supporters Section */
+    .credits-section {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-lg);
+      padding: var(--spacing-lg);
+      background: rgba(5, 5, 7, 0.8);
+      border: 1px solid var(--color-border);
+      border-radius: 2px;
+    }
+
+    .section-title {
+      font-size: var(--font-size-lg);
+      letter-spacing: var(--letter-spacing-wider);
+      color: var(--color-accent);
+      text-transform: uppercase;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .supporters-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-base);
+    }
+
+    .supporter {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--spacing-sm) var(--spacing-base);
+      border-bottom: 1px solid rgba(255, 136, 0, 0.1);
+      transition: all var(--duration-fast) ease;
+    }
+
+    .supporter:last-child {
+      border-bottom: none;
+    }
+
+    .supporter:hover {
+      background: rgba(255, 136, 0, 0.05);
+      padding-left: var(--spacing-base);
+    }
+
+    .supporter-info {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-base);
+    }
+
+    .supporter-rank {
+      font-size: var(--font-size-base);
+      min-width: 20px;
+      text-align: center;
+      color: var(--color-accent);
+      font-weight: 700;
+    }
+
+    .supporter-name {
+      font-size: var(--font-size-base);
+      color: var(--color-text-primary);
+      font-weight: 600;
+    }
+
+    .supporter-amount {
+      font-size: var(--font-size-base);
+      color: var(--color-accent);
+      font-weight: 700;
+      letter-spacing: var(--letter-spacing-wide);
+    }
+
+    /* Stream Info */
+    .stream-info {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-sm);
+      text-align: center;
+      padding: var(--spacing-lg);
+      background: rgba(255, 136, 0, 0.05);
+      border: 1px solid var(--color-border);
+      border-radius: 2px;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-xs);
+    }
+
+    .info-label {
+      font-size: var(--font-size-xs);
+      letter-spacing: var(--letter-spacing-wider);
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+    }
+
+    .info-content {
+      font-size: var(--font-size-lg);
+      color: var(--color-text-primary);
+      font-weight: 600;
+    }
+
+    .info-content.highlight {
+      color: var(--color-accent);
+      letter-spacing: var(--letter-spacing-wide);
+    }
+
+    /* Stats Grid */
+    .credits-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--spacing-base);
+      width: 100%;
+    }
+
+    .stat-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-base);
+      background: rgba(255, 136, 0, 0.05);
+      border: 1px solid var(--color-border);
+      border-radius: 2px;
+    }
+
+    .stat-box-value {
+      font-size: var(--font-size-2xl);
+      font-weight: 700;
+      color: var(--color-accent);
+      letter-spacing: var(--letter-spacing-tight);
+    }
+
+    .stat-box-label {
+      font-size: var(--font-size-xs);
+      letter-spacing: var(--letter-spacing-wider);
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    /* Footer */
+    .credits-footer {
+      font-size: var(--font-size-sm);
+      letter-spacing: var(--letter-spacing-normal);
+      color: var(--color-text-muted);
+      text-align: center;
+      line-height: 1.8;
+    }
+
+    .footer-link {
+      color: var(--color-accent);
+      text-decoration: none;
+      transition: all var(--duration-fast) ease;
+    }
+
+    .footer-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .credits-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .credits-main-title {
+        font-size: var(--font-size-2xl);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="credits-container">
+    <div class="credits-content">
+      <div class="credits-main-title">DANKE FÜR DEN STREAM!</div>
+      <div class="credits-subtitle">Du warst Fantastisch!</div>
+
+      <div class="divider-full"></div>
+
+      <!-- Stats -->
+      <div class="credits-stats">
+        <div class="stat-box">
+          <div class="stat-box-value" id="statViewers">1,234</div>
+          <div class="stat-box-label">Viewer</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-value" id="statTips">$456.78</div>
+          <div class="stat-box-label">Tips</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-value" id="statDuration">2h 45m</div>
+          <div class="stat-box-label">Dauer</div>
+        </div>
+      </div>
+
+      <!-- Top Supporters -->
+      <div class="credits-section">
+        <div class="section-title">🌟 TOP SUPPORTER 🌟</div>
+        <div class="supporters-list" id="supportersList">
+          <div class="supporter">
+            <div class="supporter-info">
+              <div class="supporter-rank">1</div>
+              <div class="supporter-name">xXCoolGuy420Xx</div>
+            </div>
+            <div class="supporter-amount">$50.00</div>
+          </div>
+          <div class="supporter">
+            <div class="supporter-info">
+              <div class="supporter-rank">2</div>
+              <div class="supporter-name">DesignMaster99</div>
+            </div>
+            <div class="supporter-amount">$25.00</div>
+          </div>
+          <div class="supporter">
+            <div class="supporter-info">
+              <div class="supporter-rank">3</div>
+              <div class="supporter-name">StreamFan2024</div>
+            </div>
+            <div class="supporter-amount">$12.50</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Next Stream Info -->
+      <div class="stream-info">
+        <div class="info-item">
+          <div class="info-label">Nächster Stream</div>
+          <div class="info-content highlight" id="nextStreamTime">MORGEN 18:00 UHR</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Stream-Thema</div>
+          <div class="info-content" id="nextStreamTopic">Level Design Deep Dive</div>
+        </div>
+      </div>
+
+      <div class="divider-full"></div>
+
+      <!-- Footer -->
+      <div class="credits-footer">
+        <div>Danke, dass du Teil der D4RKST3R Community bist!</div>
+        <div>Folge mir für mehr: <span class="footer-link">twitch.tv/D4RKST3R</span></div>
+        <div style="margin-top: var(--spacing-base); font-size: var(--font-size-xs);">
+          Made with ❤️ for Gamers
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/utils.js"></script>
+  <script>
+    // Test Data
+    function loadCredits(data = {}) {
+      // Stats
+      document.getElementById('statViewers').textContent =
+        formatNumber(data.viewers || 1234);
+      document.getElementById('statTips').textContent =
+        formatMoney(data.tips || 456.78);
+      document.getElementById('statDuration').textContent =
+        data.duration || '2h 45m';
+
+      // Next Stream
+      document.getElementById('nextStreamTime').textContent =
+        (data.nextStreamTime || 'MORGEN 18:00 UHR').toUpperCase();
+      document.getElementById('nextStreamTopic').textContent =
+        data.nextStreamTopic || 'Level Design Deep Dive';
+    }
+
+    // Initialize
+    loadCredits();
+
+    // Optional: Add supporters dynamically
+    function addSupporter(name, amount, rank = null) {
+      const list = document.getElementById('supportersList');
+      const supporter = document.createElement('div');
+      supporter.className = 'supporter animate-slideInRight';
+
+      const nextRank = rank || list.children.length + 1;
+
+      supporter.innerHTML = `
+        <div class="supporter-info">
+          <div class="supporter-rank">${nextRank}</div>
+          <div class="supporter-name">${name}</div>
+        </div>
+        <div class="supporter-amount">${formatMoney(amount)}</div>
+      `;
+
+      list.appendChild(supporter);
+    }
+
+    // Test
+    setTimeout(() => {
+      addSupporter('NewSupporter99', 30);
+    }, 1000);
+  </script>
+</body>
+</html>

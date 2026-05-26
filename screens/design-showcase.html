@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design Showcase - D4RKST3R</title>
+  <link rel="stylesheet" href="../styles/main.css">
+  <style>
+    .showcase-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: var(--spacing-xl);
+      padding: var(--spacing-xl);
+      background: var(--color-bg);
+      position: relative;
+    }
+
+    .showcase-container::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: var(--opacity-subtle);
+      pointer-events: none;
+      background-image:
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 79px,
+          var(--color-accent) 79px,
+          var(--color-accent) 80px
+        ),
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 79px,
+          var(--color-accent) 79px,
+          var(--color-accent) 80px
+        );
+      z-index: 0;
+    }
+
+    .showcase-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-lg);
+      width: 100%;
+      max-width: 1600px;
+      height: 100%;
+    }
+
+    .showcase-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-base);
+      text-align: center;
+    }
+
+    .showcase-title {
+      font-size: var(--font-size-xl);
+      letter-spacing: var(--letter-spacing-widest);
+      color: var(--color-text-primary);
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .showcase-subtitle {
+      font-size: var(--font-size-base);
+      letter-spacing: var(--letter-spacing-wide);
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+    }
+
+    .showcase-main {
+      display: flex;
+      gap: var(--spacing-lg);
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* Image Area */
+    .showcase-image-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 136, 0, 0.05);
+      border: 1px solid var(--color-border);
+      border-radius: 2px;
+      overflow: hidden;
+      position: relative;
+      min-height: 400px;
+    }
+
+    .showcase-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .showcase-image.active {
+      display: block;
+      animation: slideInLeft var(--duration-base) ease-out;
+    }
+
+    .showcase-image-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-lg);
+      color: var(--color-text-muted);
+      text-align: center;
+    }
+
+    .showcase-image-placeholder svg {
+      width: 120px;
+      height: 120px;
+      opacity: 0.3;
+    }
+
+    /* Info Area */
+    .showcase-info {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-lg);
+      width: 320px;
+      background: rgba(5, 5, 7, 0.8);
+      border: 1px solid var(--color-border);
+      border-radius: 2px;
+      padding: var(--spacing-lg);
+    }
+
+    .info-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-sm);
+    }
+
+    .info-label {
+      font-size: var(--font-size-xs);
+      letter-spacing: var(--letter-spacing-wider);
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+    }
+
+    .info-value {
+      font-size: var(--font-size-base);
+      color: var(--color-text-primary);
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .info-value.highlight {
+      color: var(--color-accent);
+      letter-spacing: var(--letter-spacing-wide);
+    }
+
+    .info-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+      opacity: 0.3;
+    }
+
+    .info-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-sm);
+    }
+
+    .info-tag {
+      padding: 4px 8px;
+      border: 1px solid rgba(255, 136, 0, 0.25);
+      border-radius: 2px;
+      font-size: var(--font-size-xs);
+      letter-spacing: var(--letter-spacing-wide);
+      color: rgba(255, 136, 0, 0.6);
+      text-transform: uppercase;
+      transition: all var(--duration-fast) ease;
+    }
+
+    .info-tag:hover {
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+      background: rgba(255, 136, 0, 0.1);
+    }
+
+    .info-description {
+      font-size: var(--font-size-sm);
+      letter-spacing: var(--letter-spacing-normal);
+      color: var(--color-text-secondary);
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    .info-stats {
+      display: flex;
+      justify-content: space-around;
+      padding-top: var(--spacing-base);
+      border-top: 1px solid rgba(255, 136, 0, 0.1);
+    }
+
+    .info-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-xs);
+    }
+
+    .info-stat-value {
+      font-size: var(--font-size-lg);
+      font-weight: 700;
+      color: var(--color-accent);
+    }
+
+    .info-stat-label {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .showcase-controls {
+      display: flex;
+      gap: var(--spacing-base);
+      justify-content: center;
+      width: 100%;
+    }
+
+    .control-btn {
+      padding: var(--spacing-sm) var(--spacing-lg);
+      border: 1px solid var(--color-border);
+      background: transparent;
+      color: var(--color-accent);
+      font-family: var(--font-mono);
+      font-size: var(--font-size-xs);
+      letter-spacing: var(--letter-spacing-wide);
+      cursor: pointer;
+      transition: all var(--duration-fast) ease;
+      text-transform: uppercase;
+    }
+
+    .control-btn:hover {
+      border-color: var(--color-accent);
+      background: rgba(255, 136, 0, 0.1);
+      box-shadow: 0 0 10px rgba(255, 136, 0, 0.2);
+    }
+
+    /* Responsive */
+    @media (max-width: 1280px) {
+      .showcase-main {
+        flex-direction: column;
+      }
+
+      .showcase-info {
+        width: 100%;
+      }
+
+      .showcase-image-area {
+        min-height: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="showcase-container">
+    <div class="showcase-content">
+      <div class="showcase-header">
+        <div class="showcase-title">🎨 DESIGN SHOWCASE 🎨</div>
+        <div class="showcase-subtitle">Community Designs & Inspiration</div>
+      </div>
+
+      <div class="showcase-main">
+        <!-- Image Area -->
+        <div class="showcase-image-area" id="imageArea">
+          <img id="showcaseImage" class="showcase-image active" src="" alt="Showcase Design">
+          <div class="showcase-image-placeholder" id="placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <path d="M21 15l-5-5L5 21"/>
+            </svg>
+            <div>Kein Design geladen</div>
+          </div>
+        </div>
+
+        <!-- Info Area -->
+        <div class="showcase-info">
+          <div class="info-section">
+            <div class="info-label">Designer</div>
+            <div class="info-value highlight" id="designerName">@Username</div>
+          </div>
+
+          <div class="info-divider"></div>
+
+          <div class="info-section">
+            <div class="info-label">Titel</div>
+            <div class="info-value" id="designTitle">Design Titel</div>
+          </div>
+
+          <div class="info-section">
+            <div class="info-label">Beschreibung</div>
+            <div class="info-description" id="designDescription">
+              Eine großartig Beschreibung des Designs...
+            </div>
+          </div>
+
+          <div class="info-section">
+            <div class="info-label">Tags</div>
+            <div class="info-tags" id="designTags">
+              <div class="info-tag">Design</div>
+              <div class="info-tag">Level</div>
+            </div>
+          </div>
+
+          <div class="info-stats">
+            <div class="info-stat">
+              <div class="info-stat-value" id="designLikes">1.2K</div>
+              <div class="info-stat-label">Likes</div>
+            </div>
+            <div class="info-stat">
+              <div class="info-stat-value" id="designComments">234</div>
+              <div class="info-stat-label">Comments</div>
+            </div>
+            <div class="info-stat">
+              <div class="info-stat-value" id="designShares">45</div>
+              <div class="info-stat-label">Shares</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="showcase-controls">
+        <button class="control-btn" onclick="previousDesign()">← VORHERIGES</button>
+        <button class="control-btn" onclick="nextDesign()">NÄCHSTES →</button>
+        <button class="control-btn" onclick="randomDesign()">ZUFÄLLIG</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/utils.js"></script>
+  <script>
+    let designs = [
+      {
+        title: 'Cyberpunk Level Design',
+        designer: '@DesignMaster99',
+        description: 'Ein futuristisches Level-Design mit neon Lichtern und komplexen Geometrien.',
+        image: 'https://via.placeholder.com/800x600?text=Cyberpunk+Design',
+        tags: ['Level', 'Cyberpunk', 'Futuristic'],
+        likes: 1200,
+        comments: 234,
+        shares: 45
+      },
+      {
+        title: 'Medieval Castle Layout',
+        designer: '@CastleBuilder2024',
+        description: 'Ein mittelalterliches Schlosslayout mit realistischen Details.',
+        image: 'https://via.placeholder.com/800x600?text=Medieval+Castle',
+        tags: ['Castle', 'Medieval', 'Strategy'],
+        likes: 890,
+        comments: 156,
+        shares: 32
+      },
+      {
+        title: 'Pixel Art Environment',
+        designer: '@PixelArtist',
+        description: 'Schöne Pixel-Art Umgebung für ein Retro-Spiel.',
+        image: 'https://via.placeholder.com/800x600?text=Pixel+Art',
+        tags: ['Pixel Art', 'Retro', 'Environment'],
+        likes: 2100,
+        comments: 445,
+        shares: 78
+      }
+    ];
+
+    let currentIndex = 0;
+
+    function loadDesign(index) {
+      if (designs.length === 0) return;
+
+      index = (index + designs.length) % designs.length;
+      currentIndex = index;
+
+      const design = designs[index];
+
+      // Update image
+      const imgElement = document.getElementById('showcaseImage');
+      const placeholder = document.getElementById('placeholder');
+
+      imgElement.src = design.image;
+      imgElement.onload = () => {
+        placeholder.style.display = 'none';
+        imgElement.style.display = 'block';
+      };
+      imgElement.onerror = () => {
+        placeholder.style.display = 'flex';
+        imgElement.style.display = 'none';
+      };
+
+      // Update info
+      document.getElementById('designerName').textContent = design.designer;
+      document.getElementById('designTitle').textContent = design.title;
+      document.getElementById('designDescription').textContent = design.description;
+
+      // Update tags
+      const tagsContainer = document.getElementById('designTags');
+      tagsContainer.innerHTML = design.tags
+        .map(tag => `<div class="info-tag">${tag}</div>`)
+        .join('');
+
+      // Update stats
+      document.getElementById('designLikes').textContent = formatNumber(design.likes);
+      document.getElementById('designComments').textContent = formatNumber(design.comments);
+      document.getElementById('designShares').textContent = formatNumber(design.shares);
+    }
+
+    function previousDesign() {
+      loadDesign(currentIndex - 1);
+    }
+
+    function nextDesign() {
+      loadDesign(currentIndex + 1);
+    }
+
+    function randomDesign() {
+      loadDesign(Math.floor(Math.random() * designs.length));
+    }
+
+    // Initialize
+    loadDesign(0);
+  </script>
+</body>
+</html>

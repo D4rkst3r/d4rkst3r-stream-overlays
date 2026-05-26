@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Stats - D4RKST3R</title>
+  <link rel="stylesheet" href="../styles/main.css">
+  <style>
+    .stats-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: var(--spacing-xl);
+      padding: var(--spacing-xl);
+      background: var(--color-bg);
+      position: relative;
+    }
+
+    .stats-container::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: var(--opacity-subtle);
+      pointer-events: none;
+      background-image:
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 79px,
+          var(--color-accent) 79px,
+          var(--color-accent) 80px
+        ),
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 79px,
+          var(--color-accent) 79px,
+          var(--color-accent) 80px
+        );
+      z-index: 0;
+    }
+
+    .stats-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-xl);
+    }
+
+    .stats-title {
+      font-size: var(--font-size-xl);
+      letter-spacing: var(--letter-spacing-widest);
+      color: var(--color-text-primary);
+      text-transform: uppercase;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-lg);
+      width: 100%;
+    }
+
+    .stat-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-base);
+      padding: var(--spacing-lg);
+      background: rgba(5, 5, 7, 0.8);
+      border: 1px solid var(--color-border);
+      border-radius: 2px;
+      min-width: 220px;
+      transition: all var(--duration-fast) ease;
+    }
+
+    .stat-card:hover {
+      border-color: var(--color-border-accent);
+      box-shadow: 0 0 15px rgba(255, 136, 0, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .stat-card.highlight {
+      border-color: var(--color-accent);
+      background: rgba(255, 136, 0, 0.05);
+      box-shadow: 0 0 20px rgba(255, 136, 0, 0.2);
+    }
+
+    .stat-icon {
+      font-size: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.8;
+    }
+
+    .stat-label {
+      font-size: var(--font-size-xs);
+      letter-spacing: var(--letter-spacing-wider);
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: var(--font-size-2xl);
+      font-weight: 700;
+      letter-spacing: var(--letter-spacing-tight);
+      color: var(--color-text-primary);
+      transition: all var(--duration-fast) ease;
+    }
+
+    .stat-value.changing {
+      animation: counterBounce var(--duration-base) ease;
+      color: var(--color-accent);
+    }
+
+    .stat-unit {
+      font-size: var(--font-size-sm);
+      color: var(--color-accent);
+      letter-spacing: var(--letter-spacing-wide);
+      opacity: 0.8;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+      opacity: 0.3;
+      margin: var(--spacing-base) 0;
+    }
+
+    .stats-footer {
+      font-size: var(--font-size-xs);
+      letter-spacing: var(--letter-spacing-wide);
+      color: var(--color-text-muted);
+      text-align: center;
+    }
+
+    /* Responsive */
+    @media (max-width: 1280px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-base);
+      }
+
+      .stat-card {
+        min-width: 180px;
+        padding: var(--spacing-base);
+      }
+
+      .stat-value {
+        font-size: var(--font-size-xl);
+      }
+
+      .stat-icon {
+        font-size: 24px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stat-card {
+        min-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stats-container">
+    <div class="stats-content">
+      <div class="stats-title">📊 LIVE STATS 📊</div>
+
+      <div class="stats-grid">
+        <!-- Followers -->
+        <div class="stat-card" id="followerCard">
+          <div class="stat-icon">👥</div>
+          <div class="stat-label">Followers</div>
+          <div class="stat-value" id="followerCount">0</div>
+        </div>
+
+        <!-- Viewers -->
+        <div class="stat-card" id="viewerCard">
+          <div class="stat-icon">👁️</div>
+          <div class="stat-label">Viewer</div>
+          <div class="stat-value" id="viewerCount">0</div>
+        </div>
+
+        <!-- Tips Today -->
+        <div class="stat-card" id="tipsCard">
+          <div class="stat-icon">💰</div>
+          <div class="stat-label">Tips Heute</div>
+          <div class="stat-value" id="tipsAmount">$0.00</div>
+        </div>
+
+        <!-- Subs This Stream -->
+        <div class="stat-card" id="subsCard">
+          <div class="stat-icon">🎁</div>
+          <div class="stat-label">Subs Diesen Stream</div>
+          <div class="stat-value" id="subsCount">0</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="stats-footer">
+        Live Stats werden automatisch aktualisiert | StreamElements Integration
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/utils.js"></script>
+  <script>
+    let statsState = {
+      followers: 0,
+      viewers: 0,
+      tipsToday: 0,
+      subsThisStream: 0
+    };
+
+    // Update einzelner Stat
+    function updateStat(statName, value, label) {
+      const element = document.getElementById(statName);
+      if (!element) return;
+
+      // Formatiere Wert basierend auf Typ
+      let displayValue = value;
+      if (statName === 'tipsAmount') {
+        displayValue = formatMoney(value);
+      } else if (['followerCount', 'viewerCount', 'subsCount'].includes(statName)) {
+        displayValue = formatNumber(value);
+      }
+
+      element.textContent = displayValue;
+
+      // Animate change
+      element.classList.add('changing');
+      setTimeout(() => {
+        element.classList.remove('changing');
+      }, 300);
+    }
+
+    // Alle Stats updaten
+    function updateAllStats(data) {
+      if (data.followers !== undefined) {
+        updateStat('followerCount', data.followers);
+        statsState.followers = data.followers;
+      }
+      if (data.viewers !== undefined) {
+        updateStat('viewerCount', data.viewers);
+        statsState.viewers = data.viewers;
+      }
+      if (data.tipsToday !== undefined) {
+        updateStat('tipsAmount', data.tipsToday);
+        statsState.tipsToday = data.tipsToday;
+      }
+      if (data.subsThisStream !== undefined) {
+        updateStat('subsCount', data.subsThisStream);
+        statsState.subsThisStream = data.subsThisStream;
+      }
+    }
+
+    // Test Mode (remove in production)
+    function testStats() {
+      updateAllStats({
+        followers: 1234,
+        viewers: 567,
+        tipsToday: 89.50,
+        subsThisStream: 12
+      });
+    }
+
+    // Initialize
+    setTimeout(testStats, 1000);
+
+    // Setup SE Events
+    if (typeof setupStreamElements === 'function') {
+      setupStreamElements({
+        onTip: (amount, username) => {
+          const newTotal = statsState.tipsToday + amount;
+          updateStat('tipsAmount', newTotal);
+          statsState.tipsToday = newTotal;
+        },
+        onFollower: (username) => {
+          const newCount = statsState.followers + 1;
+          updateStat('followerCount', newCount);
+          statsState.followers = newCount;
+
+          // Highlight follower card
+          const card = document.getElementById('followerCard');
+          card.classList.add('highlight');
+          setTimeout(() => card.classList.remove('highlight'), 3000);
+        },
+        onSubscriber: (tier, username) => {
+          const newCount = statsState.subsThisStream + 1;
+          updateStat('subsCount', newCount);
+          statsState.subsThisStream = newCount;
+
+          // Highlight subs card
+          const card = document.getElementById('subsCard');
+          card.classList.add('highlight');
+          setTimeout(() => card.classList.remove('highlight'), 3000);
+        }
+      });
+    }
+
+    // Poll für Follower/Viewer Updates (wenn SE API verfügbar)
+    // Hier könnte man später noch SE API Integration einbauen
+  </script>
+</body>
+</html>

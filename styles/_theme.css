@@ -1,0 +1,203 @@
+/* ═══════════════════════════════════════════════════════════════
+   D4RKST3R Theme System
+   Zentrale Farb-, Font- und Layout-Definitionen
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Colors */
+  --color-bg: #050507;
+  --color-accent: #ff8800;
+  --color-text-primary: #e8e8e8;
+  --color-text-secondary: #c0c0c0;
+  --color-text-muted: rgba(232, 232, 232, 0.35);
+  --color-border: rgba(255, 136, 0, 0.25);
+  --color-border-accent: rgba(255, 136, 0, 0.6);
+
+  /* Fonts */
+  --font-mono: 'Courier New', monospace;
+  --font-size-xs: 10px;
+  --font-size-sm: 12px;
+  --font-size-base: 14px;
+  --font-size-lg: 18px;
+  --font-size-xl: 28px;
+  --font-size-2xl: 48px;
+  --font-size-3xl: 96px;
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-base: 16px;
+  --spacing-lg: 20px;
+  --spacing-xl: 28px;
+  --spacing-2xl: 32px;
+
+  /* Letter Spacing */
+  --letter-spacing-tight: -4px;
+  --letter-spacing-normal: 2px;
+  --letter-spacing-wide: 4px;
+  --letter-spacing-wider: 6px;
+  --letter-spacing-widest: 12px;
+
+  /* Effects */
+  --opacity-subtle: 0.04;
+  --opacity-muted: 0.35;
+  --opacity-half: 0.5;
+  --opacity-strong: 0.6;
+
+  /* Timing */
+  --duration-fast: 150ms;
+  --duration-base: 300ms;
+  --duration-slow: 500ms;
+  --duration-slower: 1500ms;
+  --easing-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --easing-in-out: cubic-bezier(0.42, 0, 0.58, 1);
+}
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  font-family: var(--font-mono);
+  color: var(--color-text-primary);
+  background: var(--color-bg);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Grid Background Helper */
+.grid-background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: var(--opacity-subtle);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.grid-background svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Container */
+.container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 1;
+}
+
+/* Text Utilities */
+.text-primary {
+  color: var(--color-text-primary);
+}
+
+.text-secondary {
+  color: var(--color-text-secondary);
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.text-accent {
+  color: var(--color-accent);
+}
+
+/* Size Utilities */
+.text-xs {
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--letter-spacing-wider);
+}
+
+.text-sm {
+  font-size: var(--font-size-sm);
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.text-lg {
+  font-size: var(--font-size-lg);
+  letter-spacing: var(--letter-spacing-normal);
+}
+
+.text-xl {
+  font-size: var(--font-size-xl);
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.text-2xl {
+  font-size: var(--font-size-2xl);
+  letter-spacing: var(--letter-spacing-normal);
+}
+
+.text-3xl {
+  font-size: var(--font-size-3xl);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+/* Font Weight */
+.font-bold {
+  font-weight: 700;
+}
+
+.font-normal {
+  font-weight: 400;
+}
+
+/* Alignment */
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* Spacing Utilities */
+.mt-base {
+  margin-top: var(--spacing-base);
+}
+
+.mt-lg {
+  margin-top: var(--spacing-lg);
+}
+
+.mt-xl {
+  margin-top: var(--spacing-xl);
+}
+
+.mb-base {
+  margin-bottom: var(--spacing-base);
+}
+
+.mb-lg {
+  margin-bottom: var(--spacing-lg);
+}
+
+.mb-xl {
+  margin-bottom: var(--spacing-xl);
+}
+
+.p-base {
+  padding: var(--spacing-base);
+}
+
+.p-lg {
+  padding: var(--spacing-lg);
+}

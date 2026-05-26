@@ -1,0 +1,31 @@
+# OS Files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# Python
+__pycache__/
+*.py[cod]
+.env
+venv/
+
+# Local Server
+.http-server/
+
+# Node (falls später npm verwendet)
+node_modules/
+package-lock.json
+
+# Logs
+*.log
+
+# OS-specific
+*.exe
+*.bat
+.claude/

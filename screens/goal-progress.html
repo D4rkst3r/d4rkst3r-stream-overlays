@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goal Progress - D4RKST3R</title>
+  <link rel="stylesheet" href="../styles/main.css">
+  <style>
+    .goal-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: var(--spacing-xl);
+      padding: var(--spacing-xl);
+      background: var(--color-bg);
+      position: relative;
+    }
+
+    .goal-container::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: var(--opacity-subtle);
+      pointer-events: none;
+      background-image:
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 79px,
+          var(--color-accent) 79px,
+          var(--color-accent) 80px
+        ),
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 79px,
+          var(--color-accent) 79px,
+          var(--color-accent) 80px
+        );
+      z-index: 0;
+    }
+
+    .goal-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-lg);
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .goal-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-lg);
+      width: 100%;
+    }
+
+    .goal-amounts {
+      display: flex;
+      align-items: baseline;
+      gap: var(--spacing-base);
+    }
+
+    .goal-current {
+      font-size: var(--font-size-2xl);
+      font-weight: 700;
+      color: var(--color-accent);
+      letter-spacing: var(--letter-spacing-tight);
+    }
+
+    .goal-separator {
+      font-size: var(--font-size-lg);
+      color: var(--color-text-secondary);
+    }
+
+    .goal-target {
+      font-size: var(--font-size-xl);
+      font-weight: 400;
+      color: var(--color-text-secondary);
+      letter-spacing: var(--letter-spacing-normal);
+    }
+
+    .goal-title {
+      font-size: var(--font-size-lg);
+      letter-spacing: var(--letter-spacing-wider);
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 32px;
+      background: rgba(255, 136, 0, 0.1);
+      border: 1px solid var(--color-border);
+      border-radius: 2px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: var(--progress-width, 0%);
+      background: linear-gradient(
+        90deg,
+        var(--color-accent) 0%,
+        rgba(255, 136, 0, 0.6) 100%
+      );
+      transition: width var(--duration-slower) var(--easing-out);
+      z-index: 1;
+    }
+
+    .progress-value {
+      position: absolute;
+      top: 50%;
+      right: 16px;
+      transform: translateY(-50%);
+      font-size: var(--font-size-base);
+      font-weight: 700;
+      letter-spacing: var(--letter-spacing-wide);
+      color: var(--color-text-secondary);
+      z-index: 2;
+    }
+
+    .goal-status {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .goal-remaining {
+      font-size: var(--font-size-xl);
+      font-weight: 700;
+      color: var(--color-accent);
+      letter-spacing: var(--letter-spacing-tight);
+    }
+
+    .goal-message {
+      font-size: var(--font-size-base);
+      letter-spacing: var(--letter-spacing-normal);
+      color: var(--color-text-muted);
+      max-width: 600px;
+      text-align: center;
+    }
+
+    .goal-meta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-lg);
+      font-size: var(--font-size-sm);
+      letter-spacing: var(--letter-spacing-wide);
+      color: var(--color-text-secondary);
+    }
+
+    .goal-meta-item {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .goal-tag {
+      padding: 4px 12px;
+      border: 1px solid rgba(255, 136, 0, 0.25);
+      border-radius: 2px;
+      font-size: var(--font-size-xs);
+      letter-spacing: var(--letter-spacing-wider);
+      text-transform: uppercase;
+      color: rgba(255, 136, 0, 0.6);
+    }
+
+    .goal-tag.active {
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+      background: rgba(255, 136, 0, 0.1);
+    }
+
+    /* Responsive */
+    @media (max-width: 1280px) {
+      .goal-container {
+        padding: var(--spacing-lg);
+        gap: var(--spacing-lg);
+      }
+
+      .goal-current {
+        font-size: var(--font-size-xl);
+      }
+
+      .goal-target {
+        font-size: var(--font-size-base);
+      }
+
+      .progress-bar {
+        height: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="goal-container">
+    <div class="goal-content">
+      <div class="goal-title">💰 GOAL PROGRESS 💰</div>
+
+      <div class="goal-header">
+        <div class="goal-amounts">
+          <span class="goal-current" id="goalCurrent">$0</span>
+          <span class="goal-separator">/</span>
+          <span class="goal-target" id="goalTarget">$500</span>
+        </div>
+      </div>
+
+      <div class="progress-bar" id="goalProgressBar">
+        <div class="progress-value" id="goalPercentage">0%</div>
+      </div>
+
+      <div class="goal-status">
+        <div class="goal-remaining">
+          <span id="goalRemaining">$500</span> noch bis zum Ziel!
+        </div>
+        <div class="goal-message" id="goalMessage">
+          Hilf mit, den nächsten Soundeffekt freizuschalten!
+        </div>
+      </div>
+
+      <div class="goal-meta">
+        <div class="goal-meta-item">
+          <span id="goalType" class="goal-tag active">TIPS & SUBS</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/utils.js"></script>
+  <script>
+    let goalState = {
+      current: 0,
+      target: 500,
+      type: 'TIPS & SUBS',
+      message: 'Hilf mit, den nächsten Soundeffekt freizuschalten!'
+    };
+
+    // Update Progress Bar
+    function updateGoalProgress(current, target) {
+      const percentage = Math.min((current / target) * 100, 100);
+      const remaining = Math.max(target - current, 0);
+
+      // Update HTML
+      document.getElementById('goalCurrent').textContent = formatMoney(current);
+      document.getElementById('goalTarget').textContent = formatMoney(target);
+      document.getElementById('goalRemaining').textContent = formatMoney(remaining);
+      document.getElementById('goalPercentage').textContent = Math.round(percentage) + '%';
+
+      // Update Progress Bar
+      const bar = document.getElementById('goalProgressBar');
+      bar.style.setProperty('--progress-width', percentage + '%');
+
+      // Optional: Trigger animation
+      if (current !== goalState.current) {
+        bar.classList.add('animating');
+        setTimeout(() => bar.classList.remove('animating'), 1500);
+      }
+
+      goalState.current = current;
+    }
+
+    // Test Mode (remove in production)
+    function testGoalProgress() {
+      updateGoalProgress(125, 500);
+    }
+
+    // Initialize
+    updateGoalProgress(goalState.current, goalState.target);
+
+    // Test nach 2 Sekunden
+    setTimeout(testGoalProgress, 2000);
+
+    // Simulate SE Events (test)
+    if (typeof setupStreamElements === 'function') {
+      setupStreamElements({
+        onTip: (amount, username) => {
+          updateGoalProgress(goalState.current + amount, goalState.target);
+        },
+        onSubscriber: (tier, username) => {
+          const tipAmount = tier === 1 ? 5 : tier === 2 ? 10 : 25;
+          updateGoalProgress(goalState.current + tipAmount, goalState.target);
+        }
+      });
+    }
+  </script>
+</body>
+</html>
