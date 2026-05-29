@@ -100,6 +100,7 @@
       font-size: 12px;
       border-radius: 3px;
       transition: all 0.3s ease;
+      appearance: none;
     }
 
     input[type="text"]:focus,
@@ -110,6 +111,27 @@
       border-color: rgba(255, 136, 0, 0.5);
       background: rgba(255, 136, 0, 0.1);
       box-shadow: 0 0 10px rgba(255, 136, 0, 0.2);
+    }
+
+    /* Dropdown spezifisches Styling */
+    select {
+      cursor: pointer;
+      padding-right: 30px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ff8800' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      padding-right: 28px;
+    }
+
+    select option {
+      background: #1a1a1a;
+      color: #ff8800;
+      padding: 8px;
+    }
+
+    select option:checked {
+      background: linear-gradient(rgba(255, 136, 0, 0.2), rgba(255, 136, 0, 0.2));
+      background-color: rgba(255, 136, 0, 0.2);
     }
 
     textarea {
@@ -175,6 +197,13 @@
       color: rgba(232, 232, 232, 0.6);
       max-height: 80px;
       overflow-y: auto;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .url-display:hover {
+      background: rgba(255, 136, 0, 0.1);
+      border-color: rgba(255, 136, 0, 0.3);
     }
 
     .copy-feedback {
@@ -259,12 +288,14 @@
       width: auto;
       padding: 0;
       cursor: pointer;
+      accent-color: #ff8800;
     }
 
     .toggle label {
       margin: 0;
       display: inline;
       text-transform: none;
+      cursor: pointer;
     }
 
     .info-box {
@@ -276,6 +307,31 @@
       line-height: 1.5;
       color: rgba(232, 232, 232, 0.7);
     }
+
+    .setup-info {
+      background: rgba(0, 200, 100, 0.08);
+      border-left: 3px solid rgba(0, 200, 100, 0.4);
+      padding: 16px;
+      margin: 20px 0;
+      font-size: 11px;
+      line-height: 1.6;
+      color: rgba(232, 232, 232, 0.8);
+      border-radius: 3px;
+    }
+
+    .setup-info h3 {
+      color: #4ade80;
+      margin-bottom: 8px;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+
+    .setup-info code {
+      background: rgba(0, 200, 100, 0.1);
+      padding: 2px 6px;
+      border-radius: 2px;
+      color: #4ade80;
+    }
   </style>
 </head>
 
@@ -285,6 +341,23 @@
       <h1>🎬 STREAM CONTROL PANEL</h1>
       <p class="subtitle">Verwalte deine Overlays zentral</p>
     </header>
+
+    <!-- SETUP INFO -->
+    <div class="setup-info">
+      <h3>📌 SETUP ANLEITUNG:</h3>
+      <p>
+        <strong>URL für dein Control Panel:</strong><br>
+        <code>https://d4rkst3r.github.io/d4rkst3r-stream-overlays/Control_Panel.html</code>
+      </p>
+      <p style="margin-top: 8px;">
+        <strong>Wie es funktioniert:</strong><br>
+        1️⃣ Stelle deine Einstellungen hier ein<br>
+        2️⃣ Klick "Generieren" → URL wird in die Zwischenablage kopiert<br>
+        3️⃣ Die Vorschau zeigt dir direkt, wie es aussieht<br>
+        4️⃣ Nutze die URL in OBS als Browser Source (Größe: 1920x1080 oder kleiner)<br>
+        5️⃣ Speichere Presets um schnell zwischen Sessions zu wechseln!
+      </p>
+    </div>
 
     <div class="control-grid">
       <!-- STARTING SOON PANEL -->
