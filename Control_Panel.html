@@ -44,6 +44,178 @@
       letter-spacing: 2px;
     }
 
+    /* AUTH MODAL */
+    .auth-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(5, 5, 7, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .auth-modal.hidden {
+      display: none;
+    }
+
+    .auth-box {
+      background: rgba(5, 5, 7, 0.9);
+      border: 2px solid rgba(255, 136, 0, 0.3);
+      padding: 40px;
+      border-radius: 4px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 0 30px rgba(255, 136, 0, 0.2);
+    }
+
+    .auth-box h2 {
+      color: #ff8800;
+      font-size: 20px;
+      letter-spacing: 3px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .auth-box .info {
+      background: rgba(255, 136, 0, 0.08);
+      border-left: 3px solid rgba(255, 136, 0, 0.4);
+      padding: 12px;
+      margin-bottom: 20px;
+      font-size: 11px;
+      line-height: 1.5;
+      color: rgba(232, 232, 232, 0.7);
+      border-radius: 2px;
+    }
+
+    .auth-box .info a {
+      color: #ff8800;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .auth-box .info a:hover {
+      text-decoration: underline;
+    }
+
+    .auth-box input {
+      width: 100%;
+      padding: 12px;
+      background: rgba(255, 136, 0, 0.05);
+      border: 1px solid rgba(255, 136, 0, 0.15);
+      color: #e8e8e8;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      border-radius: 3px;
+      margin-bottom: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .auth-box input:focus {
+      outline: none;
+      border-color: rgba(255, 136, 0, 0.5);
+      background: rgba(255, 136, 0, 0.1);
+      box-shadow: 0 0 10px rgba(255, 136, 0, 0.2);
+    }
+
+    .auth-box button {
+      width: 100%;
+      padding: 12px;
+      background: rgba(255, 136, 0, 0.2);
+      border: 1px solid rgba(255, 136, 0, 0.5);
+      color: #ff8800;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border-radius: 3px;
+      transition: all 0.3s ease;
+      font-weight: 700;
+    }
+
+    .auth-box button:hover {
+      background: rgba(255, 136, 0, 0.3);
+      border-color: rgba(255, 136, 0, 0.7);
+      box-shadow: 0 0 15px rgba(255, 136, 0, 0.3);
+    }
+
+    .auth-box button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .auth-error {
+      background: rgba(255, 50, 50, 0.1);
+      border-left: 3px solid rgba(255, 50, 50, 0.5);
+      padding: 12px;
+      margin-top: 12px;
+      font-size: 11px;
+      color: #ff6666;
+      border-radius: 2px;
+      display: none;
+    }
+
+    .auth-error.show {
+      display: block;
+    }
+
+    .auth-success {
+      background: rgba(74, 222, 128, 0.1);
+      border-left: 3px solid rgba(74, 222, 128, 0.5);
+      padding: 12px;
+      margin-top: 12px;
+      font-size: 11px;
+      color: #4ade80;
+      border-radius: 2px;
+      display: none;
+    }
+
+    .auth-success.show {
+      display: block;
+    }
+
+    /* AUTH HEADER */
+    .auth-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 136, 0, 0.2);
+    }
+
+    .auth-user {
+      font-size: 11px;
+      color: rgba(232, 232, 232, 0.6);
+    }
+
+    .auth-user strong {
+      color: #ff8800;
+    }
+
+    .logout-btn {
+      padding: 6px 12px;
+      background: rgba(255, 50, 50, 0.1);
+      border: 1px solid rgba(255, 50, 50, 0.3);
+      color: #ff6666;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border-radius: 3px;
+      transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background: rgba(255, 50, 50, 0.2);
+      border-color: rgba(255, 50, 50, 0.6);
+    }
+
     .control-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -113,7 +285,6 @@
       box-shadow: 0 0 10px rgba(255, 136, 0, 0.2);
     }
 
-    /* Dropdown spezifisches Styling */
     select {
       cursor: pointer;
       padding-right: 30px;
@@ -219,7 +390,6 @@
       20%, 80% { opacity: 1; }
     }
 
-    /* Presets Section */
     .presets-section {
       margin-top: 30px;
       padding-top: 20px;
@@ -255,7 +425,6 @@
       width: auto;
     }
 
-    /* Preview Section */
     .preview-section {
       margin-top: 30px;
       border-top: 2px solid rgba(255, 136, 0, 0.3);
@@ -336,13 +505,38 @@
 </head>
 
 <body>
-  <div class="container">
+  <!-- AUTH MODAL -->
+  <div id="auth-modal" class="auth-modal">
+    <div class="auth-box">
+      <h2>🔐 AUTHENTIFIZIERUNG</h2>
+      
+      <div class="info">
+        <strong>GitHub Personal Access Token benötigt</strong><br><br>
+        1. Gehe zu <a href="https://github.com/settings/tokens" target="_blank">GitHub Settings → Tokens</a><br>
+        2. Klick "Generate new token (classic)"<br>
+        3. Setze nur <strong>"repo"</strong> Rechte (lesen)<br>
+        4. Token kopieren und hier einfügen
+      </div>
+
+      <input type="password" id="github-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxx" />
+      
+      <button onclick="authenticateToken()">LOGIN</button>
+      
+      <div id="auth-error" class="auth-error"></div>
+      <div id="auth-success" class="auth-success"></div>
+    </div>
+  </div>
+
+  <div class="container" id="main-content" style="display: none;">
     <header>
       <h1>🎬 STREAM CONTROL PANEL</h1>
       <p class="subtitle">Verwalte deine Overlays zentral</p>
+      <div class="auth-header">
+        <div class="auth-user">Authentifiziert als <strong id="auth-user-display">GitHub User</strong></div>
+        <button class="logout-btn" onclick="logout()">LOGOUT</button>
+      </div>
     </header>
 
-    <!-- SETUP INFO -->
     <div class="setup-info">
       <h3>📌 SETUP ANLEITUNG:</h3>
       <p>
@@ -526,6 +720,83 @@
 
   <script>
     const BASE_URL = window.location.origin + window.location.pathname.replace('Control_Panel.html', '');
+    const TOKEN_STORAGE_KEY = 'gh_control_panel_token';
+    const USER_STORAGE_KEY = 'gh_control_panel_user';
+
+    // AUTH SYSTEM
+    function authenticateToken() {
+      const token = document.getElementById('github-token').value.trim();
+      const errorEl = document.getElementById('auth-error');
+      const successEl = document.getElementById('auth-success');
+
+      if (!token) {
+        showError('Bitte gib einen Token ein');
+        return;
+      }
+
+      // Validiere Token mit GitHub API
+      fetch('https://api.github.com/user', {
+        headers: {
+          'Authorization': `token ${token}`,
+          'Accept': 'application/vnd.github.v3+json'
+        }
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('Token ungültig');
+        return response.json();
+      })
+      .then(data => {
+        // Token ist gültig
+        localStorage.setItem(TOKEN_STORAGE_KEY, token);
+        localStorage.setItem(USER_STORAGE_KEY, data.login);
+        showSuccess(`Willkommen, ${data.login}! 🎉`);
+        setTimeout(() => {
+          loadMainContent();
+        }, 1000);
+      })
+      .catch(error => {
+        showError('Token ungültig oder API-Fehler. Überprüfe den Token und versuche es erneut.');
+      });
+
+      function showError(msg) {
+        errorEl.textContent = '❌ ' + msg;
+        errorEl.classList.add('show');
+        successEl.classList.remove('show');
+      }
+
+      function showSuccess(msg) {
+        successEl.textContent = '✓ ' + msg;
+        successEl.classList.add('show');
+        errorEl.classList.remove('show');
+      }
+    }
+
+    function loadMainContent() {
+      const token = localStorage.getItem(TOKEN_STORAGE_KEY);
+      const user = localStorage.getItem(USER_STORAGE_KEY);
+
+      if (token && user) {
+        document.getElementById('auth-modal').classList.add('hidden');
+        document.getElementById('main-content').style.display = 'block';
+        document.getElementById('auth-user-display').textContent = user;
+      }
+    }
+
+    function logout() {
+      if (confirm('Wirklich abmelden?')) {
+        localStorage.removeItem(TOKEN_STORAGE_KEY);
+        localStorage.removeItem(USER_STORAGE_KEY);
+        location.reload();
+      }
+    }
+
+    // Check on Load
+    window.addEventListener('load', () => {
+      const token = localStorage.getItem(TOKEN_STORAGE_KEY);
+      if (token) {
+        loadMainContent();
+      }
+    });
 
     // STARTING SOON
     function generateStartingSoonURL() {
