@@ -57,6 +57,99 @@
             animation: sanftesPulsieren 3s ease-in-out infinite;
         }
 
+        /* Loading Text Styling */
+        #loading-text {
+            font-size: 18px;
+            letter-spacing: 3px;
+            color: #ff8800;
+            text-shadow: 0 0 10px rgba(255, 136, 0, 0.5);
+            height: 24px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 20px;
+            z-index: 10;
+        }
+
+        #loading-text.active {
+            display: flex;
+        }
+
+        #loading-text::after {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            animation: blink 0.6s infinite;
+        }
+
+        @keyframes blink {
+            0%, 49% {
+                content: '▌';
+                opacity: 1;
+            }
+            50%, 100% {
+                opacity: 0;
+            }
+        }
+
+        /* Glitch Effekt für Text */
+        @keyframes glitch {
+            0% {
+                text-shadow: -2px 0 #ff0000, 2px 0 #00ff00;
+            }
+            20% {
+                text-shadow: 2px 0 #ff0000, -2px 0 #00ff00;
+            }
+            40% {
+                text-shadow: -2px 0 #00ff00, 2px 0 #ff0000;
+            }
+            60% {
+                text-shadow: 2px 0 #00ff00, -2px 0 #ff0000;
+            }
+            80% {
+                text-shadow: -2px 0 #ff0000, 2px 0 #00ff00;
+            }
+            100% {
+                text-shadow: 2px 0 #ff0000, -2px 0 #00ff00;
+            }
+        }
+
+        #loading-text.glitch {
+            animation: glitch 0.3s;
+        }
+
+        /* Scan-Line Animation */
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ff8800, transparent);
+            top: 0;
+            left: 0;
+            z-index: 3;
+            animation: scanDown 4s infinite;
+            display: none;
+        }
+
+        .scan-line.active {
+            display: block;
+        }
+
+        @keyframes scanDown {
+            0% {
+                top: 0%;
+                opacity: 0.5;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                top: 100%;
+                opacity: 0.5;
+            }
+        }
+
         /* Dein SVG-Hintergrund und die Rahmen (aus deinem Code übernommen) */
         svg {
             position: absolute;
@@ -149,6 +242,9 @@
         <line x1="0" y1="1040" x2="1920" y2="1040" stroke="#ff8800" stroke-width="0.4" />
     </svg>
 
+    <!-- Scan Line Animation -->
+    <div class="scan-line"></div>
+
     <!-- Deine Rahmen-Ecken -->
     <div class="corner top-left"></div>
     <div class="corner top-right"></div>
@@ -159,6 +255,7 @@
     rgba(255,136,0,.6));margin-bottom:24px">
 
     <!-- Das Container-Element, in das wir den Timer und den Text schreiben -->
+    <div id="loading-text"></div>
     <div id="custom-text" style="color:rgba(255,136,0,.35);font-size:20px;letter-spacing:6px;margin-bottom:14px">
         STARTING SOON</div>
     <div id="timer-container">00:00</div>
@@ -186,41 +283,89 @@
         // 3. Optionalen Text aus URL holen (Standard: "STARTING SOON")
         const customText = urlParams.get('text') || "STARTING SOON";
 
+        // 4. Loading-Modus aktivieren? (Standard: false)
+        const loadingMode = urlParams.get('loading') === 'true';
+
         // Den Text im HTML anpassen
         document.getElementById('custom-text').innerText = customText;
 
-        // 4. Timer-Logik
-        // Wir rechnen die Minuten in Sekunden um (z.B. 5 Min = 300 Sek)
-        let totalSeconds = timerMinutes * 60;
-        const timerDisplay = document.getElementById('timer-container');
+        if (loadingMode) {
+            // Loading-Modus aktivieren
+            document.getElementById('loading-text').classList.add('active');
+            document.querySelector('.scan-line').classList.add('active');
+            document.getElementById('timer-container').style.display = 'none';
 
-        // Funktion, um den Timer zu formatieren (z.B. "05:00")
-        function updateTimerDisplay() {
-            let m = Math.floor(totalSeconds / 60);
-            let s = totalSeconds % 60;
+            const loadingMessages = [
+                "> INITIALIZING EMOTIONALDICE SERVER...",
+                "> LOADING LORE FRIENDLY ASSETS...",
+                "> COMPILING SHADERS...",
+                "> SYNCING GITHUB REPOSITORIES...",
+                "> MOUNTING QBCORE FRAMEWORK...",
+                "> VERIFYING STREAM INTEGRITY...",
+                "> OPTIMIZING VIDEO CODEC...",
+                "> LOADING OVERLAY MODULES...",
+                "> FINALIZING SYSTEM BOOT...",
+            ];
 
-            // Führende Nullen hinzufügen (z.B. "5" -> "05")
-            m = m < 10 ? "0" + m : m;
-            s = s < 10 ? "0" + s : s;
+            const loadingTextElement = document.getElementById('loading-text');
+            let currentMessageIndex = 0;
 
-            timerDisplay.innerText = m + ":" + s;
-        }
+            // Funktion zum Wechseln der Loading-Nachricht
+            function updateLoadingMessage() {
+                loadingTextElement.textContent = loadingMessages[currentMessageIndex];
 
-        // Erstmaliges Anzeigen vor dem Start
-        updateTimerDisplay();
+                // Zufälliger Glitch-Effekt
+                if (Math.random() > 0.7) {
+                    loadingTextElement.classList.add('glitch');
+                    setTimeout(() => {
+                        loadingTextElement.classList.remove('glitch');
+                    }, 300);
+                }
 
-        // Der eigentliche Countdown
-        const countdownInterval = setInterval(() => {
-            totalSeconds--;
-
-            if (totalSeconds < 0) {
-                // Timer ist abgelaufen
-                clearInterval(countdownInterval);
-                timerDisplay.innerText = "00:00"; // Oder ein anderer Text wie "GO!"
-            } else {
-                updateTimerDisplay();
+                currentMessageIndex = (currentMessageIndex + 1) % loadingMessages.length;
             }
-        }, 1000); // 1000 ms = 1 Sekunde
+
+            // Initial
+            updateLoadingMessage();
+
+            // Loading Text alle 1.5 Sekunden wechseln
+            setInterval(updateLoadingMessage, 1500);
+
+        } else {
+            // Timer-Modus (Original)
+            // 4. Timer-Logik
+            // Wir rechnen die Minuten in Sekunden um (z.B. 5 Min = 300 Sek)
+            let totalSeconds = timerMinutes * 60;
+            const timerDisplay = document.getElementById('timer-container');
+
+            // Funktion, um den Timer zu formatieren (z.B. "05:00")
+            function updateTimerDisplay() {
+                let m = Math.floor(totalSeconds / 60);
+                let s = totalSeconds % 60;
+
+                // Führende Nullen hinzufügen (z.B. "5" -> "05")
+                m = m < 10 ? "0" + m : m;
+                s = s < 10 ? "0" + s : s;
+
+                timerDisplay.innerText = m + ":" + s;
+            }
+
+            // Erstmaliges Anzeigen vor dem Start
+            updateTimerDisplay();
+
+            // Der eigentliche Countdown
+            const countdownInterval = setInterval(() => {
+                totalSeconds--;
+
+                if (totalSeconds < 0) {
+                    // Timer ist abgelaufen
+                    clearInterval(countdownInterval);
+                    timerDisplay.innerText = "00:00"; // Oder ein anderer Text wie "GO!"
+                } else {
+                    updateTimerDisplay();
+                }
+            }, 1000); // 1000 ms = 1 Sekunde
+        }
     </script>
 </body>
 
