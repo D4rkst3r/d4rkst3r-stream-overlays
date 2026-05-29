@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Stream Control Panel</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Courier New', monospace;
+      background: #050507;
+      color: #e8e8e8;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      border-bottom: 2px solid rgba(255, 136, 0, 0.3);
+      padding-bottom: 20px;
+    }
+
+    h1 {
+      color: #ff8800;
+      font-size: 28px;
+      letter-spacing: 4px;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: rgba(232, 232, 232, 0.5);
+      font-size: 12px;
+      letter-spacing: 2px;
+    }
+
+    .control-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 24px;
+      margin-bottom: 30px;
+    }
+
+    .panel {
+      background: rgba(5, 5, 7, 0.8);
+      border: 1px solid rgba(255, 136, 0, 0.2);
+      padding: 20px;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+    }
+
+    .panel:hover {
+      border-color: rgba(255, 136, 0, 0.4);
+      box-shadow: 0 0 15px rgba(255, 136, 0, 0.1);
+    }
+
+    .panel-title {
+      color: #ff8800;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 136, 0, 0.2);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      color: rgba(232, 232, 232, 0.7);
+      font-size: 11px;
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      background: rgba(255, 136, 0, 0.05);
+      border: 1px solid rgba(255, 136, 0, 0.15);
+      color: #e8e8e8;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      border-radius: 3px;
+      transition: all 0.3s ease;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: rgba(255, 136, 0, 0.5);
+      background: rgba(255, 136, 0, 0.1);
+      box-shadow: 0 0 10px rgba(255, 136, 0, 0.2);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    button {
+      flex: 1;
+      padding: 10px 12px;
+      background: rgba(255, 136, 0, 0.1);
+      border: 1px solid rgba(255, 136, 0, 0.3);
+      color: #ff8800;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border-radius: 3px;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: rgba(255, 136, 0, 0.2);
+      border-color: rgba(255, 136, 0, 0.6);
+      box-shadow: 0 0 10px rgba(255, 136, 0, 0.2);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .button-primary {
+      background: rgba(255, 136, 0, 0.2);
+      border-color: rgba(255, 136, 0, 0.5);
+    }
+
+    .button-secondary {
+      background: rgba(100, 100, 100, 0.1);
+      border: 1px solid rgba(100, 100, 100, 0.3);
+      color: rgba(232, 232, 232, 0.7);
+    }
+
+    .button-secondary:hover {
+      background: rgba(100, 100, 100, 0.2);
+      border-color: rgba(100, 100, 100, 0.6);
+    }
+
+    .url-display {
+      background: rgba(255, 136, 0, 0.05);
+      border: 1px solid rgba(255, 136, 0, 0.2);
+      padding: 10px;
+      border-radius: 3px;
+      margin-top: 10px;
+      word-break: break-all;
+      font-size: 11px;
+      color: rgba(232, 232, 232, 0.6);
+      max-height: 80px;
+      overflow-y: auto;
+    }
+
+    .copy-feedback {
+      display: none;
+      color: #4ade80;
+      font-size: 10px;
+      margin-top: 8px;
+      animation: fadeInOut 2s ease-in-out;
+    }
+
+    @keyframes fadeInOut {
+      0%, 100% { opacity: 0; }
+      20%, 80% { opacity: 1; }
+    }
+
+    /* Presets Section */
+    .presets-section {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 2px solid rgba(255, 136, 0, 0.3);
+    }
+
+    .preset-item {
+      background: rgba(255, 136, 0, 0.08);
+      border: 1px solid rgba(255, 136, 0, 0.2);
+      padding: 12px;
+      border-radius: 3px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .preset-name {
+      color: #ff8800;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .preset-buttons {
+      display: flex;
+      gap: 6px;
+    }
+
+    .preset-buttons button {
+      padding: 6px 12px;
+      font-size: 10px;
+      flex: none;
+      width: auto;
+    }
+
+    /* Preview Section */
+    .preview-section {
+      margin-top: 30px;
+      border-top: 2px solid rgba(255, 136, 0, 0.3);
+      padding-top: 20px;
+    }
+
+    .preview-frame {
+      background: #000;
+      border: 1px solid rgba(255, 136, 0, 0.3);
+      border-radius: 4px;
+      overflow: hidden;
+      height: 200px;
+      margin-top: 15px;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .toggle input[type="checkbox"] {
+      width: auto;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .toggle label {
+      margin: 0;
+      display: inline;
+      text-transform: none;
+    }
+
+    .info-box {
+      background: rgba(255, 136, 0, 0.08);
+      border-left: 3px solid rgba(255, 136, 0, 0.4);
+      padding: 12px;
+      margin: 16px 0;
+      font-size: 11px;
+      line-height: 1.5;
+      color: rgba(232, 232, 232, 0.7);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>🎬 STREAM CONTROL PANEL</h1>
+      <p class="subtitle">Verwalte deine Overlays zentral</p>
+    </header>
+
+    <div class="control-grid">
+      <!-- STARTING SOON PANEL -->
+      <div class="panel">
+        <div class="panel-title">⏱️ STARTING SOON</div>
+
+        <div class="form-group">
+          <label>Zeit (Minuten)</label>
+          <input type="number" id="ss-time" value="5" min="1" max="60">
+        </div>
+
+        <div class="form-group">
+          <label>Custom Text</label>
+          <input type="text" id="ss-text" value="STARTING SOON" placeholder="Z.B. STREAM BEGINS">
+        </div>
+
+        <div class="form-group">
+          <label>Optionen</label>
+          <div class="toggle">
+            <input type="checkbox" id="ss-loading" checked>
+            <label for="ss-loading">Loading Mode</label>
+          </div>
+          <div class="toggle">
+            <input type="checkbox" id="ss-scan" checked>
+            <label for="ss-scan">Scan Lines</label>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button class="button-primary" onclick="generateStartingSoonURL()">Generieren</button>
+          <button class="button-secondary" onclick="previewStartingSoon()">Vorschau</button>
+        </div>
+
+        <div id="ss-feedback" class="copy-feedback"></div>
+        <div id="ss-url" class="url-display"></div>
+      </div>
+
+      <!-- BRB PANEL -->
+      <div class="panel">
+        <div class="panel-title">🔴 BE RIGHT BACK</div>
+
+        <div class="form-group">
+          <label>Pause-Dauer (Minuten)</label>
+          <input type="number" id="brb-time" value="5" min="1" max="60">
+        </div>
+
+        <div class="form-group">
+          <label>Grund der Pause</label>
+          <select id="brb-reason">
+            <option value="default">Standard</option>
+            <option value="coffee">Kaffee / Getränk</option>
+            <option value="systemcheck">System Check</option>
+            <option value="technical">Technische Probleme</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Animationen</label>
+          <div class="toggle">
+            <input type="checkbox" id="brb-animate" checked>
+            <label for="brb-animate">Aktiviert</label>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button class="button-primary" onclick="generateBRBURL()">Generieren</button>
+          <button class="button-secondary" onclick="previewBRB()">Vorschau</button>
+        </div>
+
+        <div id="brb-feedback" class="copy-feedback"></div>
+        <div id="brb-url" class="url-display"></div>
+      </div>
+
+      <!-- STREAM OVERLAY PANEL -->
+      <div class="panel">
+        <div class="panel-title">📺 STREAM OVERLAY</div>
+
+        <div class="form-group">
+          <label>Aktuelles Game/Status</label>
+          <input type="text" id="overlay-game" value="GTA5/FiveM Props" placeholder="Z.B. Coding, Design">
+        </div>
+
+        <div class="form-group">
+          <label>Kategorie</label>
+          <input type="text" id="overlay-category" value="GAME DESIGN STREAM" placeholder="Z.B. GAME DESIGN">
+        </div>
+
+        <div class="form-group">
+          <label>Lauftext (Marquee)</label>
+          <input type="text" id="overlay-marquee" value="──────────────────────────────────────────────────────────" placeholder="Custom Text">
+        </div>
+
+        <div class="form-group">
+          <label>Optionen</label>
+          <div class="toggle">
+            <input type="checkbox" id="overlay-marquee-animate" checked>
+            <label for="overlay-marquee-animate">Marquee Animation</label>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button class="button-primary" onclick="generateOverlayURL()">Generieren</button>
+          <button class="button-secondary" onclick="previewOverlay()">Vorschau</button>
+        </div>
+
+        <div id="overlay-feedback" class="copy-feedback"></div>
+        <div id="overlay-url" class="url-display"></div>
+      </div>
+
+      <!-- GAME ROTATION PANEL -->
+      <div class="panel">
+        <div class="panel-title">🎮 GAME ROTATION</div>
+
+        <div class="info-box">
+          Gib mehrere Games durch Komma getrennt ein und stelle das Wechsel-Intervall ein.
+        </div>
+
+        <div class="form-group">
+          <label>Games (Komma-getrennt)</label>
+          <textarea id="rotation-games" placeholder="GTA5,Coding,Design,Level Creation">GTA5,Coding,Design</textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Wechsel-Intervall (Sekunden)</label>
+          <input type="number" id="rotation-interval" value="15" min="5" max="120">
+        </div>
+
+        <div class="form-group">
+          <label>Kategorie</label>
+          <input type="text" id="rotation-category" value="GAME DESIGN STREAM">
+        </div>
+
+        <div class="button-group">
+          <button class="button-primary" onclick="generateRotationURL()">Generieren</button>
+          <button class="button-secondary" onclick="previewRotation()">Vorschau</button>
+        </div>
+
+        <div id="rotation-feedback" class="copy-feedback"></div>
+        <div id="rotation-url" class="url-display"></div>
+      </div>
+    </div>
+
+    <!-- PRESETS SECTION -->
+    <div class="presets-section">
+      <h2 style="color: #ff8800; margin-bottom: 16px; font-size: 16px; letter-spacing: 3px;">💾 PRESETS</h2>
+
+      <div class="form-group">
+        <label>Preset Name</label>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="preset-name" placeholder="Z.B. GTA5 Session" style="flex: 1;">
+          <button class="button-primary" onclick="savePreset()" style="flex: 0;">SPEICHERN</button>
+        </div>
+      </div>
+
+      <div id="presets-list" style="margin-top: 16px;"></div>
+    </div>
+
+    <!-- PREVIEW SECTION -->
+    <div class="preview-section">
+      <h2 style="color: #ff8800; margin-bottom: 16px; font-size: 16px; letter-spacing: 3px;">👁️ VORSCHAU</h2>
+      <div class="preview-frame">
+        <iframe id="preview-frame" src="about:blank"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BASE_URL = window.location.origin + window.location.pathname.replace('Control_Panel.html', '');
+
+    // STARTING SOON
+    function generateStartingSoonURL() {
+      const time = document.getElementById('ss-time').value;
+      const text = encodeURIComponent(document.getElementById('ss-text').value);
+      const loading = document.getElementById('ss-loading').checked ? 'true' : 'false';
+      const url = `${BASE_URL}Static_5_StartingSoon.html?time=${time}&text=${text}&loading=${loading}`;
+      displayURL('ss-url', url, 'ss-feedback');
+    }
+
+    function previewStartingSoon() {
+      const time = document.getElementById('ss-time').value;
+      const text = encodeURIComponent(document.getElementById('ss-text').value);
+      const loading = document.getElementById('ss-loading').checked ? 'true' : 'false';
+      const url = `${BASE_URL}Static_5_StartingSoon.html?time=${time}&text=${text}&loading=${loading}`;
+      document.getElementById('preview-frame').src = url;
+    }
+
+    // BRB
+    function generateBRBURL() {
+      const time = document.getElementById('brb-time').value;
+      const reason = document.getElementById('brb-reason').value;
+      const animate = document.getElementById('brb-animate').checked ? 'true' : 'false';
+      const url = `${BASE_URL}Static_6_BRB.html?time=${time}&reason=${reason}&animate=${animate}`;
+      displayURL('brb-url', url, 'brb-feedback');
+    }
+
+    function previewBRB() {
+      const time = document.getElementById('brb-time').value;
+      const reason = document.getElementById('brb-reason').value;
+      const animate = document.getElementById('brb-animate').checked ? 'true' : 'false';
+      const url = `${BASE_URL}Static_6_BRB.html?time=${time}&reason=${reason}&animate=${animate}`;
+      document.getElementById('preview-frame').src = url;
+    }
+
+    // STREAM OVERLAY
+    function generateOverlayURL() {
+      const game = encodeURIComponent(document.getElementById('overlay-game').value);
+      const category = encodeURIComponent(document.getElementById('overlay-category').value);
+      const marquee = encodeURIComponent(document.getElementById('overlay-marquee').value);
+      const animate = document.getElementById('overlay-marquee-animate').checked ? 'true' : 'false';
+      const url = `${BASE_URL}Static_4_Overlay.html?game=${game}&category=${category}&marquee=${marquee}&animate-marquee=${animate}`;
+      displayURL('overlay-url', url, 'overlay-feedback');
+    }
+
+    function previewOverlay() {
+      const game = encodeURIComponent(document.getElementById('overlay-game').value);
+      const category = encodeURIComponent(document.getElementById('overlay-category').value);
+      const marquee = encodeURIComponent(document.getElementById('overlay-marquee').value);
+      const animate = document.getElementById('overlay-marquee-animate').checked ? 'true' : 'false';
+      const url = `${BASE_URL}Static_4_Overlay.html?game=${game}&category=${category}&marquee=${marquee}&animate-marquee=${animate}`;
+      document.getElementById('preview-frame').src = url;
+    }
+
+    // GAME ROTATION
+    function generateRotationURL() {
+      const games = encodeURIComponent(document.getElementById('rotation-games').value);
+      const interval = document.getElementById('rotation-interval').value;
+      const category = encodeURIComponent(document.getElementById('rotation-category').value);
+      const url = `${BASE_URL}Static_4_Overlay.html?games=${games}&interval=${interval}&category=${category}`;
+      displayURL('rotation-url', url, 'rotation-feedback');
+    }
+
+    function previewRotation() {
+      const games = encodeURIComponent(document.getElementById('rotation-games').value);
+      const interval = document.getElementById('rotation-interval').value;
+      const category = encodeURIComponent(document.getElementById('rotation-category').value);
+      const url = `${BASE_URL}Static_4_Overlay.html?games=${games}&interval=${interval}&category=${category}`;
+      document.getElementById('preview-frame').src = url;
+    }
+
+    // Helper Functions
+    function displayURL(elementId, url, feedbackId) {
+      const urlElement = document.getElementById(elementId);
+      urlElement.textContent = url;
+      urlElement.style.cursor = 'pointer';
+
+      urlElement.onclick = () => {
+        navigator.clipboard.writeText(url).then(() => {
+          const feedback = document.getElementById(feedbackId);
+          feedback.textContent = '✓ URL kopiert!';
+          feedback.style.display = 'block';
+          setTimeout(() => {
+            feedback.style.display = 'none';
+          }, 2000);
+        });
+      };
+    }
+
+    // PRESETS
+    function savePreset() {
+      const name = document.getElementById('preset-name').value;
+      if (!name) {
+        alert('Bitte gib einen Namen für das Preset ein');
+        return;
+      }
+
+      const preset = {
+        name: name,
+        startingSoon: {
+          time: document.getElementById('ss-time').value,
+          text: document.getElementById('ss-text').value,
+          loading: document.getElementById('ss-loading').checked,
+          scan: document.getElementById('ss-scan').checked
+        },
+        brb: {
+          time: document.getElementById('brb-time').value,
+          reason: document.getElementById('brb-reason').value,
+          animate: document.getElementById('brb-animate').checked
+        },
+        overlay: {
+          game: document.getElementById('overlay-game').value,
+          category: document.getElementById('overlay-category').value,
+          marquee: document.getElementById('overlay-marquee').value,
+          animate: document.getElementById('overlay-marquee-animate').checked
+        }
+      };
+
+      let presets = JSON.parse(localStorage.getItem('streamPresets')) || [];
+      presets.push(preset);
+      localStorage.setItem('streamPresets', JSON.stringify(presets));
+
+      document.getElementById('preset-name').value = '';
+      renderPresets();
+    }
+
+    function loadPreset(index) {
+      const presets = JSON.parse(localStorage.getItem('streamPresets')) || [];
+      const preset = presets[index];
+
+      document.getElementById('ss-time').value = preset.startingSoon.time;
+      document.getElementById('ss-text').value = preset.startingSoon.text;
+      document.getElementById('ss-loading').checked = preset.startingSoon.loading;
+      document.getElementById('ss-scan').checked = preset.startingSoon.scan;
+
+      document.getElementById('brb-time').value = preset.brb.time;
+      document.getElementById('brb-reason').value = preset.brb.reason;
+      document.getElementById('brb-animate').checked = preset.brb.animate;
+
+      document.getElementById('overlay-game').value = preset.overlay.game;
+      document.getElementById('overlay-category').value = preset.overlay.category;
+      document.getElementById('overlay-marquee').value = preset.overlay.marquee;
+      document.getElementById('overlay-marquee-animate').checked = preset.overlay.animate;
+    }
+
+    function deletePreset(index) {
+      if (confirm('Preset wirklich löschen?')) {
+        let presets = JSON.parse(localStorage.getItem('streamPresets')) || [];
+        presets.splice(index, 1);
+        localStorage.setItem('streamPresets', JSON.stringify(presets));
+        renderPresets();
+      }
+    }
+
+    function renderPresets() {
+      const presets = JSON.parse(localStorage.getItem('streamPresets')) || [];
+      const container = document.getElementById('presets-list');
+
+      if (presets.length === 0) {
+        container.innerHTML = '<p style="color: rgba(232, 232, 232, 0.4);">Noch keine Presets gespeichert</p>';
+        return;
+      }
+
+      container.innerHTML = presets.map((preset, index) => `
+        <div class="preset-item">
+          <span class="preset-name">${preset.name}</span>
+          <div class="preset-buttons">
+            <button onclick="loadPreset(${index})" class="button-secondary">LADEN</button>
+            <button onclick="deletePreset(${index})" class="button-secondary">LÖSCHEN</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Initial Render
+    renderPresets();
+  </script>
+</body>
+
+</html>
