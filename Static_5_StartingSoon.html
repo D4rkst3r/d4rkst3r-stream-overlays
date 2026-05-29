@@ -289,11 +289,43 @@
         // Den Text im HTML anpassen
         document.getElementById('custom-text').innerText = customText;
 
+        // 4. Timer-Logik
+        // Wir rechnen die Minuten in Sekunden um (z.B. 5 Min = 300 Sek)
+        let totalSeconds = timerMinutes * 60;
+        const timerDisplay = document.getElementById('timer-container');
+
+        // Funktion, um den Timer zu formatieren (z.B. "05:00")
+        function updateTimerDisplay() {
+            let m = Math.floor(totalSeconds / 60);
+            let s = totalSeconds % 60;
+
+            // Führende Nullen hinzufügen (z.B. "5" -> "05")
+            m = m < 10 ? "0" + m : m;
+            s = s < 10 ? "0" + s : s;
+
+            timerDisplay.innerText = m + ":" + s;
+        }
+
+        // Erstmaliges Anzeigen vor dem Start
+        updateTimerDisplay();
+
+        // Der eigentliche Countdown
+        const countdownInterval = setInterval(() => {
+            totalSeconds--;
+
+            if (totalSeconds < 0) {
+                // Timer ist abgelaufen
+                clearInterval(countdownInterval);
+                timerDisplay.innerText = "00:00"; // Oder ein anderer Text wie "GO!"
+            } else {
+                updateTimerDisplay();
+            }
+        }, 1000); // 1000 ms = 1 Sekunde
+
         if (loadingMode) {
             // Loading-Modus aktivieren
             document.getElementById('loading-text').classList.add('active');
             document.querySelector('.scan-line').classList.add('active');
-            document.getElementById('timer-container').style.display = 'none';
 
             const loadingMessages = [
                 "> INITIALIZING EMOTIONALDICE SERVER...",
@@ -330,41 +362,6 @@
 
             // Loading Text alle 1.5 Sekunden wechseln
             setInterval(updateLoadingMessage, 1500);
-
-        } else {
-            // Timer-Modus (Original)
-            // 4. Timer-Logik
-            // Wir rechnen die Minuten in Sekunden um (z.B. 5 Min = 300 Sek)
-            let totalSeconds = timerMinutes * 60;
-            const timerDisplay = document.getElementById('timer-container');
-
-            // Funktion, um den Timer zu formatieren (z.B. "05:00")
-            function updateTimerDisplay() {
-                let m = Math.floor(totalSeconds / 60);
-                let s = totalSeconds % 60;
-
-                // Führende Nullen hinzufügen (z.B. "5" -> "05")
-                m = m < 10 ? "0" + m : m;
-                s = s < 10 ? "0" + s : s;
-
-                timerDisplay.innerText = m + ":" + s;
-            }
-
-            // Erstmaliges Anzeigen vor dem Start
-            updateTimerDisplay();
-
-            // Der eigentliche Countdown
-            const countdownInterval = setInterval(() => {
-                totalSeconds--;
-
-                if (totalSeconds < 0) {
-                    // Timer ist abgelaufen
-                    clearInterval(countdownInterval);
-                    timerDisplay.innerText = "00:00"; // Oder ein anderer Text wie "GO!"
-                } else {
-                    updateTimerDisplay();
-                }
-            }, 1000); // 1000 ms = 1 Sekunde
         }
     </script>
 </body>
