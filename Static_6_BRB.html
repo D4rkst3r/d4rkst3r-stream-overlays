@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
+  <title>BRB - Be Right Back</title>
   <style>
     * {
       box-sizing: border-box;
@@ -14,9 +15,6 @@
       font-family: 'Courier New', monospace;
       color: #e8e8e8;
       overflow: hidden;
-    }
-
-    body {
       background: #050507;
       width: 1920px;
       height: 1080px;
@@ -25,12 +23,175 @@
       justify-content: center;
       flex-direction: column;
     }
+
+    /* Timer Container */
+    #timer-container {
+      font-size: 120px;
+      font-weight: bold;
+      color: #ff8800;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      z-index: 10;
+      margin-top: 20px;
+    }
+
+    /* Pulsier-Animation */
+    @keyframes sanftesPulsieren {
+      0% {
+        opacity: 0.35;
+      }
+      50% {
+        opacity: 0.8;
+      }
+      100% {
+        opacity: 0.35;
+      }
+    }
+
+    #custom-text {
+      font-size: 50px;
+      margin-bottom: 20px;
+      letter-spacing: 5px;
+      z-index: 10;
+      animation: sanftesPulsieren 3s ease-in-out infinite;
+    }
+
+    /* Dynamic Message Styling */
+    #dynamic-message {
+      font-size: 18px;
+      letter-spacing: 3px;
+      color: #ff8800;
+      text-shadow: 0 0 10px rgba(255, 136, 0, 0.5);
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      z-index: 10;
+      min-width: 400px;
+    }
+
+    /* Glitch Effekt */
+    @keyframes glitch {
+      0% {
+        text-shadow: -2px 0 #ff0000, 2px 0 #00ff00;
+      }
+      20% {
+        text-shadow: 2px 0 #ff0000, -2px 0 #00ff00;
+      }
+      40% {
+        text-shadow: -2px 0 #00ff00, 2px 0 #ff0000;
+      }
+      60% {
+        text-shadow: 2px 0 #00ff00, -2px 0 #ff0000;
+      }
+      80% {
+        text-shadow: -2px 0 #ff0000, 2px 0 #ff8800;
+      }
+      100% {
+        text-shadow: 2px 0 #ff0000, -2px 0 #00ff00;
+      }
+    }
+
+    #dynamic-message.glitch {
+      animation: glitch 0.3s;
+    }
+
+    /* Scan-Line Animation */
+    .scan-line {
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #ff8800, transparent);
+      top: 0;
+      left: 0;
+      z-index: 3;
+      animation: scanDown 4s infinite;
+      display: none;
+    }
+
+    .scan-line.active {
+      display: block;
+    }
+
+    @keyframes scanDown {
+      0% {
+        top: 0%;
+        opacity: 0.5;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        top: 100%;
+        opacity: 0.5;
+      }
+    }
+
+    /* SVG Grid Hintergrund */
+    svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: .03;
+      z-index: 1;
+    }
+
+    /* Corner Brackets */
+    .corner {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      z-index: 2;
+    }
+
+    .top-left {
+      top: 18px;
+      left: 18px;
+      border-top: 2px solid #ff8800;
+      border-left: 2px solid #ff8800;
+    }
+
+    .top-right {
+      top: 18px;
+      right: 18px;
+      border-top: 2px solid #ff8800;
+      border-right: 2px solid #ff8800;
+    }
+
+    .bottom-left {
+      bottom: 18px;
+      left: 18px;
+      border-bottom: 2px solid #ff8800;
+      border-left: 2px solid #ff8800;
+    }
+
+    .bottom-right {
+      bottom: 18px;
+      right: 18px;
+      border-bottom: 2px solid #ff8800;
+      border-right: 2px solid #ff8800;
+    }
+
+    /* Logo Animation */
+    @keyframes logoGlow {
+      0%, 100% {
+        filter: drop-shadow(0 0 20px rgba(255, 136, 0, 0.6));
+      }
+      50% {
+        filter: drop-shadow(0 0 40px rgba(255, 136, 0, 0.8));
+      }
+    }
+
+    #logo {
+      animation: logoGlow 2s ease-in-out infinite;
+    }
   </style>
 </head>
 
 <body>
-  <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:.03" viewBox="0 0 1920 1080"
-    preserveAspectRatio="none">
+  <!-- SVG Grid Hintergrund -->
+  <svg viewBox="0 0 1920 1080" preserveAspectRatio="none">
     <line x1="0" y1="0" x2="0" y2="1080" stroke="#ff8800" stroke-width="0.4" />
     <line x1="80" y1="0" x2="80" y2="1080" stroke="#ff8800" stroke-width="0.4" />
     <line x1="160" y1="0" x2="160" y2="1080" stroke="#ff8800" stroke-width="0.4" />
@@ -71,36 +232,155 @@
     <line x1="0" y1="960" x2="1920" y2="960" stroke="#ff8800" stroke-width="0.4" />
     <line x1="0" y1="1040" x2="1920" y2="1040" stroke="#ff8800" stroke-width="0.4" />
   </svg>
-  <div
-    style="position:absolute;top:18px;left:18px;width:36px;height:36px;border-top:1.5px solid rgba(255,136,0,0.5);border-left:1.5px solid rgba(255,136,0,0.5)">
-  </div>
-  <div
-    style="position:absolute;top:18px;right:18px;width:36px;height:36px;border-top:1.5px solid rgba(255,136,0,0.5);border-right:1.5px solid rgba(255,136,0,0.5)">
-  </div>
-  <div
-    style="position:absolute;bottom:18px;left:18px;width:36px;height:36px;border-bottom:1.5px solid rgba(255,136,0,0.5);border-left:1.5px solid rgba(255,136,0,0.5)">
-  </div>
-  <div
-    style="position:absolute;bottom:18px;right:18px;width:36px;height:36px;border-bottom:1.5px solid rgba(255,136,0,0.5);border-right:1.5px solid rgba(255,136,0,0.5)">
-  </div>
-  <img src="logo.png" alt="Logo" style="width:160px;height:160px;object-fit:contain;filter:drop-shadow(0 0 20px
-    rgba(255,136,0,.6));margin-bottom:24px">
+
+  <!-- Scan Line Animation -->
+  <div class="scan-line"></div>
+
+  <!-- Corner Brackets -->
+  <div class="corner top-left"></div>
+  <div class="corner top-right"></div>
+  <div class="corner bottom-left"></div>
+  <div class="corner bottom-right"></div>
+
+  <!-- Logo mit Animation -->
+  <img id="logo" src="logo.png" alt="Logo" style="width:160px;height:160px;object-fit:contain;margin-bottom:24px">
+
+  <!-- Kleine Überschrift -->
   <div style="color:rgba(255,136,0,.3);font-size:11px;letter-spacing:6px;margin-bottom:18px">KURZE PAUSE</div>
+
+  <!-- Dynamische Nachricht -->
+  <div id="dynamic-message"></div>
+
+  <!-- Haupttext BRB -->
   <div style="color:#c0c0c0;font-size:56px;font-weight:700;letter-spacing:14px">BRB</div>
+
+  <!-- Separator -->
   <div style="margin:16px auto;width:70px;height:1px;background:#ff8800"></div>
+
+  <!-- Untertitel -->
   <div style="color:rgba(232,232,232,.4);font-size:13px;letter-spacing:3px">Gleich geht's weiter!</div>
+
+  <!-- Timer -->
+  <div id="timer-container">00:00</div>
+
+  <!-- Social Links -->
   <div style="margin-top:32px;display:flex;gap:12px">
-    <div
-      style="padding:7px 18px;border:1px solid rgba(255,136,0,.25);color:rgba(255,136,0,.6);font-size:10px;letter-spacing:3px">
+    <div style="padding:7px 18px;border:1px solid rgba(255,136,0,.25);color:rgba(255,136,0,.6);font-size:10px;letter-spacing:3px">
       DISCORD</div>
-    <div
-      style="padding:7px 18px;border:1px solid rgba(255,136,0,.25);color:rgba(255,136,0,.6);font-size:10px;letter-spacing:3px">
+    <div style="padding:7px 18px;border:1px solid rgba(255,136,0,.25);color:rgba(255,136,0,.6);font-size:10px;letter-spacing:3px">
       TWITTER/X</div>
-    <div
-      style="padding:7px 18px;border:1px solid rgba(255,136,0,.25);color:rgba(255,136,0,.6);font-size:10px;letter-spacing:3px">
+    <div style="padding:7px 18px;border:1px solid rgba(255,136,0,.25);color:rgba(255,136,0,.6);font-size:10px;letter-spacing:3px">
       YOUTUBE</div>
   </div>
+
+  <!-- Footer -->
   <div style="margin-top:36px;color:rgba(232,232,232,.1);font-size:10px;letter-spacing:5px">D4RKST3R</div>
+
+  <!-- JavaScript für Funktionalität -->
+  <script>
+    // URL-Parameter auslesen
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // Zeit in Minuten aus URL holen (Standard: 5 Minuten)
+    const timerMinutes = parseInt(urlParams.get('time')) || 5;
+
+    // Grund der Pause aus URL holen
+    const reason = urlParams.get('reason') || 'default';
+
+    // Animationen aktivieren? (Standard: true)
+    const animate = urlParams.get('animate') !== 'false';
+
+    // Verschiedene Nachrichten je nach Grund
+    const messages = {
+      coffee: [
+        "> BREWING COFFEE...",
+        "> CAFFEINE INTAKE IN PROGRESS...",
+        "> REFUELING SYSTEM...",
+        "> ENERGY RESTORATION...",
+      ],
+      systemcheck: [
+        "> SYSTEM CHECK INITIATED...",
+        "> VERIFYING INTEGRITY...",
+        "> RUNNING DIAGNOSTICS...",
+        "> OPTIMIZATION IN PROGRESS...",
+      ],
+      technical: [
+        "> TECHNICAL DIFFICULTIES...",
+        "> SYSTEM MAINTENANCE...",
+        "> RESOLVING ISSUES...",
+        "> REBOOTING...",
+      ],
+      default: [
+        "> SYSTEM STANDBY...",
+        "> LOADING RESOURCES...",
+        "> INITIALIZING...",
+        "> PROCESSING...",
+      ]
+    };
+
+    // Aktive Nachrichten basierend auf Grund
+    const activeMessages = messages[reason] || messages.default;
+
+    // Timer-Logik
+    let totalSeconds = timerMinutes * 60;
+    const timerDisplay = document.getElementById('timer-container');
+    const dynamicMessage = document.getElementById('dynamic-message');
+
+    function updateTimerDisplay() {
+      let m = Math.floor(totalSeconds / 60);
+      let s = totalSeconds % 60;
+
+      m = m < 10 ? "0" + m : m;
+      s = s < 10 ? "0" + s : s;
+
+      timerDisplay.innerText = m + ":" + s;
+    }
+
+    // Erstes Display
+    updateTimerDisplay();
+
+    // Countdown starten
+    const countdownInterval = setInterval(() => {
+      totalSeconds--;
+
+      if (totalSeconds < 0) {
+        clearInterval(countdownInterval);
+        timerDisplay.innerText = "00:00";
+      } else {
+        updateTimerDisplay();
+      }
+    }, 1000);
+
+    // Dynamische Nachrichten
+    if (animate) {
+      const scanLine = document.querySelector('.scan-line');
+      scanLine.classList.add('active');
+
+      let currentMessageIndex = 0;
+
+      function updateDynamicMessage() {
+        dynamicMessage.textContent = activeMessages[currentMessageIndex];
+
+        // Zufälliger Glitch-Effekt
+        if (Math.random() > 0.75) {
+          dynamicMessage.classList.add('glitch');
+          setTimeout(() => {
+            dynamicMessage.classList.remove('glitch');
+          }, 300);
+        }
+
+        currentMessageIndex = (currentMessageIndex + 1) % activeMessages.length;
+      }
+
+      // Initial
+      updateDynamicMessage();
+
+      // Nachricht alle 2 Sekunden wechseln
+      setInterval(updateDynamicMessage, 2000);
+    } else {
+      dynamicMessage.textContent = "SYSTEM STANDBY...";
+    }
+  </script>
 </body>
 
 </html>
