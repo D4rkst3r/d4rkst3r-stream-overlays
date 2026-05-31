@@ -15,9 +15,30 @@
       font-family: 'Courier New', monospace;
       color: #e8e8e8;
       overflow: hidden;
-      background: transparent;
+      background: linear-gradient(-45deg, #050507, #1a1a2e, #0f3460, #050507);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
       width: 1920px;
       height: 1080px;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Glowing Orbs Overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(255, 136, 0, 0.08), transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(0, 150, 255, 0.06), transparent 50%),
+        radial-gradient(circle at 50% 80%, rgba(255, 136, 0, 0.04), transparent 50%);
+      pointer-events: none;
+      z-index: 0;
     }
 
     /* CSS Grid Pattern statt einzelne SVG Linien */
@@ -26,7 +47,7 @@
       inset: 0;
       background-image: 
         linear-gradient(0deg, transparent 24%, rgba(255, 136, 0, 0.03) 25%, rgba(255, 136, 0, 0.03) 26%, transparent 27%, transparent 74%, rgba(255, 136, 0, 0.03) 75%, rgba(255, 136, 0, 0.03) 76%, transparent 77%, transparent),
-        linear-gradient(90deg, transparent 24%, rgba(255, 136, 0, 0.03) 25%, rgba(255, 136, 0, 0.03) 26%, transparent 27%, transparent 74%, rgba(255, 136, 0, 0.03) 75%, rgba(255, 136, 0, 0.03) 76%, transparent 77%, transparent);
+        linear-gradient(90deg, transparent 24%, rgba(255, 136, 0, 0.03) 25%, rgba(255, 136, 0, 0.03) 26%, transparent 27%, transparent 74%, rgba(255, 136, 0, 0.03) 75%, rgba(255, 136, 0, 0.03) 76%, transparent 27%, transparent);
       background-size: 80px 80px;
       z-index: 1;
     }
@@ -258,7 +279,7 @@
       <img src="logo.png" alt="Logo" class="logo">
       <span class="channel-name">D4RKST3R</span>
       <span class="separator-line">
-        <span class="marquee-text" id="marquee-content">───────────────────────────────────────────────────────────────</span>
+        <span class="marquee-text" id="marquee-content">──────────────────────────────────────────────────────────────────────────────────────────────</span>
       </span>
       <span class="stream-category" id="stream-category">GAME DESIGN STREAM</span>
       <div class="live-indicator">
@@ -285,7 +306,7 @@
     const game = urlParams.get('game') || 'GTA5/FiveM Props';
     const category = urlParams.get('category') || 'GAME DESIGN STREAM';
     const url = urlParams.get('url') || 'twitch.tv/D4RKST3R';
-    const marqueeText = urlParams.get('marquee') || '───────────────────────────────────────────────────────────────';
+    const marqueeText = urlParams.get('marquee') || '──────────────────────────────────────────────────────────────────────────────────────────────';
     const animateMarquee = urlParams.get('animate-marquee') !== 'false';
 
     // DOM-Elemente aktualisieren
