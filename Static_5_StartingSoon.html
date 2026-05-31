@@ -15,7 +15,9 @@
             font-family: 'Courier New', monospace;
             color: #e8e8e8;
             overflow: hidden;
-            background: #050507;
+            background: linear-gradient(-45deg, #050507, #1a1a2e, #0f3460, #050507);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
             width: 1920px;
             height: 1080px;
             display: flex;
@@ -24,14 +26,33 @@
             flex-direction: column;
         }
 
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glowing Orbs Overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 136, 0, 0.08), transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 150, 255, 0.06), transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(255, 136, 0, 0.04), transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
         /* Styling für den Timer Text */
         #timer-container {
             font-size: 120px;
             font-weight: bold;
             color: #ff8800;
-            /* Passend zu deinen Akzenten */
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
             z-index: 10;
+            position: relative;
         }
 
         /* Pulsier-Animation definieren */
@@ -55,6 +76,7 @@
             letter-spacing: 5px;
             z-index: 10;
             animation: sanftesPulsieren 3s ease-in-out infinite;
+            position: relative;
         }
 
         /* Loading Text Styling */
@@ -70,6 +92,7 @@
             justify-content: center;
             margin-bottom: 20px;
             z-index: 10;
+            position: relative;
         }
 
         #loading-text.active {
@@ -121,7 +144,7 @@
 
         /* Scan-Line Animation */
         .scan-line {
-            position: absolute;
+            position: fixed;
             width: 100%;
             height: 2px;
             background: linear-gradient(90deg, transparent, #ff8800, transparent);
@@ -150,9 +173,9 @@
             }
         }
 
-        /* Dein SVG-Hintergrund und die Rahmen (aus deinem Code übernommen) */
+        /* Dein SVG-Hintergrund und die Rahmen */
         svg {
-            position: absolute;
+            position: fixed;
             inset: 0;
             width: 100%;
             height: 100%;
@@ -161,7 +184,7 @@
         }
 
         .corner {
-            position: absolute;
+            position: fixed;
             width: 40px;
             height: 40px;
             z-index: 2;
@@ -194,13 +217,18 @@
             border-bottom: 2px solid #ff8800;
             border-right: 2px solid #ff8800;
         }
+
+        .content-wrapper {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+        }
     </style>
 </head>
 
 <body>
     <!-- Hintergrund (Dein bestehendes SVG) -->
     <svg viewBox="0 0 1920 1080" preserveAspectRatio="none">
-        <!-- Deine Linien (aus Platzgründen hier verkürzt dargestellt) -->
         <line x1="0" y1="0" x2="0" y2="1080" stroke="#ff8800" stroke-width="0.4" />
         <line x1="80" y1="0" x2="80" y2="1080" stroke="#ff8800" stroke-width="0.4" />
         <line x1="160" y1="0" x2="160" y2="1080" stroke="#ff8800" stroke-width="0.4" />
@@ -251,26 +279,24 @@
     <div class="corner bottom-left"></div>
     <div class="corner bottom-right"></div>
 
-    <img src="logo.png" alt="Logo" style="width:160px;height:160px;object-fit:contain;filter:drop-shadow(0 0 20px
-    rgba(255,136,0,.6));margin-bottom:24px">
+    <div class="content-wrapper">
+        <img src="logo.png" alt="Logo" style="width:160px;height:160px;object-fit:contain;filter:drop-shadow(0 0 20px rgba(255,136,0,.6));margin-bottom:24px">
 
-    <!-- Das Container-Element, in das wir den Timer und den Text schreiben -->
-    <div id="loading-text"></div>
-    <div id="custom-text" style="color:rgba(255,136,0,.35);font-size:20px;letter-spacing:6px;margin-bottom:14px">
-        STARTING SOON</div>
-    <div id="timer-container">00:00</div>
-    <div
-        style="margin:20px auto;width:320px;height:1px;background:linear-gradient(90deg,transparent,#ff8800,transparent)">
+        <!-- Das Container-Element, in das wir den Timer und den Text schreiben -->
+        <div id="loading-text"></div>
+        <div id="custom-text" style="color:rgba(255,136,0,.35);font-size:20px;letter-spacing:6px;margin-bottom:14px">
+            STARTING SOON</div>
+        <div id="timer-container">00:00</div>
+        <div
+            style="margin:20px auto;width:320px;height:1px;background:linear-gradient(90deg,transparent,#ff8800,transparent)">
+        </div>
+        <div style="color:#c0c0c0;font-size:28px;font-weight:700;letter-spacing:12px">D4RKST3R</div>
+        <div style="color:rgba(232,232,232,.35);font-size:12px;letter-spacing:4px;margin-top:8px">GAME DESIGN &nbsp;·&nbsp;
+            LEVEL DESIGN &nbsp;·&nbsp; DEV TALK</div>
+        <div
+            style="margin-top:28px;padding:7px 20px;border:1px solid rgba(255,136,0,.25);color:rgba(255,136,0,.6);font-size:10px;letter-spacing:3px">
+            TWITCH.TV/D4RKST3R</div>
     </div>
-    <div style="color:#c0c0c0;font-size:28px;font-weight:700;letter-spacing:12px">D4RKST3R</div>
-    <div style="color:rgba(232,232,232,.35);font-size:12px;letter-spacing:4px;margin-top:8px">GAME DESIGN &nbsp;·&nbsp;
-        LEVEL DESIGN &nbsp;·&nbsp; DEV TALK</div>
-    <div
-        style="margin-top:28px;padding:7px 20px;border:1px solid rgba(255,136,0,.25);color:rgba(255,136,0,.6);font-size:10px;letter-spacing:3px">
-        TWITCH.TV/D4RKST3R</div>
-
-
-
 
     <!-- Das JavaScript, das die URL ausliest und den Timer steuert -->
     <script>
