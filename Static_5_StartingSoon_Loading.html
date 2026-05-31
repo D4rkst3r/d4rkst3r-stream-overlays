@@ -15,7 +15,9 @@
             font-family: 'Courier New', monospace;
             color: #e8e8e8;
             overflow: hidden;
-            background: #050507;
+            background: linear-gradient(-45deg, #050507, #1a1a2e, #0f3460, #050507);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
             width: 1920px;
             height: 1080px;
             display: flex;
@@ -24,9 +26,28 @@
             flex-direction: column;
         }
 
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glowing Orbs Overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 136, 0, 0.08), transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 150, 255, 0.06), transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(255, 136, 0, 0.04), transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
         /* SVG Hintergrund mit Scan-Effekt */
         svg {
-            position: absolute;
+            position: fixed;
             inset: 0;
             width: 100%;
             height: 100%;
@@ -36,7 +57,7 @@
 
         /* Scan-Line Animation */
         .scan-line {
-            position: absolute;
+            position: fixed;
             width: 100%;
             height: 2px;
             background: linear-gradient(90deg, transparent, #ff8800, transparent);
@@ -62,7 +83,7 @@
 
         /* Corner Styling */
         .corner {
-            position: absolute;
+            position: fixed;
             width: 40px;
             height: 40px;
             z-index: 2;
@@ -104,6 +125,7 @@
             flex-direction: column;
             align-items: center;
             gap: 30px;
+            position: relative;
         }
 
         #logo {
