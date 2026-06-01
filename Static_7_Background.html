@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Background — D4RKST3R</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Courier New', monospace;
+      background: #050507;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── Animiertes Grid (driftet langsam) ── */
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(0deg,   transparent 24%, rgba(255,136,0,0.035) 25%, rgba(255,136,0,0.035) 26%, transparent 27%,
+                                transparent 74%, rgba(255,136,0,0.035) 75%, rgba(255,136,0,0.035) 76%, transparent 77%),
+        linear-gradient(90deg,  transparent 24%, rgba(255,136,0,0.035) 25%, rgba(255,136,0,0.035) 26%, transparent 27%,
+                                transparent 74%, rgba(255,136,0,0.035) 75%, rgba(255,136,0,0.035) 76%, transparent 77%);
+      background-size: 80px 80px;
+      animation: gridDrift 20s linear infinite;
+      z-index: 1;
+    }
+    @keyframes gridDrift {
+      0%   { background-position: 0px 0px; }
+      100% { background-position: 80px 80px; }
+    }
+
+    /* ── Particle Canvas ── */
+    #particles {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+    }
+
+    /* ── Zentraler Glow der atmet ── */
+    .radial-glow {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 55% 55% at 50% 50%, rgba(255,136,0,0.07) 0%, transparent 70%);
+      animation: glowBreathe 5s ease-in-out infinite;
+      z-index: 3;
+      pointer-events: none;
+    }
+    @keyframes glowBreathe {
+      0%, 100% { opacity: 0.6; transform: scale(1);    }
+      50%       { opacity: 1;   transform: scale(1.08); }
+    }
+
+    /* ── Corner Brackets ── */
+    @keyframes cornerGlow {
+      0%, 100% { opacity: 0.5; box-shadow: 0 0 10px rgba(255,136,0,0.3); }
+      50%       { opacity: 1;   box-shadow: 0 0 22px rgba(255,136,0,0.6); }
+    }
+    .corner {
+      position: absolute;
+      width: 48px;
+      height: 48px;
+      z-index: 10;
+      animation: cornerGlow 3s ease-in-out infinite;
+    }
+    .corner.tl { top: 22px; left: 22px;  border-top: 2px solid #ff8800; border-left:  2px solid #ff8800; }
+    .corner.tr { top: 22px; right: 22px; border-top: 2px solid #ff8800; border-right: 2px solid #ff8800; }
+    .corner.bl { bottom: 22px; left: 22px;  border-bottom: 2px solid #ff8800; border-left:  2px solid #ff8800; }
+    .corner.br { bottom: 22px; right: 22px; border-bottom: 2px solid #ff8800; border-right: 2px solid #ff8800; }
+
+    /* ── Scan Line (langsam & subtil) ── */
+    .scan-line {
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,136,0,0.15) 20%, rgba(255,136,0,0.4) 50%, rgba(255,136,0,0.15) 80%, transparent 100%);
+      top: 0; left: 0;
+      z-index: 9;
+      animation: scanDown 8s linear infinite;
+    }
+    @keyframes scanDown {
+      0%   { top: 0%;   opacity: 0; }
+      5%   {            opacity: 1; }
+      95%  {            opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    /* ── HUD Dekorations-Elemente ── */
+    .hud-line-h {
+      position: absolute;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,136,0,0.2), transparent);
+      z-index: 4;
+    }
+    .hud-line-v {
+      position: absolute;
+      width: 1px;
+      background: linear-gradient(180deg, transparent, rgba(255,136,0,0.2), transparent);
+      z-index: 4;
+    }
+    .hud-dot {
+      position: absolute;
+      border-radius: 50%;
+      background: #ff8800;
+      z-index: 4;
+      animation: dotPulse 3s ease-in-out infinite;
+    }
+    @keyframes dotPulse {
+      0%, 100% { opacity: 0.2; transform: scale(1); }
+      50%       { opacity: 0.6; transform: scale(1.3); }
+    }
+    .hud-bracket {
+      position: absolute;
+      z-index: 4;
+      opacity: 0.15;
+    }
+
+    /* ── Katzen Mascot (subtil, rechts unten) ── */
+    .cat-bg {
+      position: absolute;
+      bottom: 60px;
+      right: 60px;
+      width: 340px;
+      height: 340px;
+      object-fit: contain;
+      mix-blend-mode: lighten;
+      opacity: 0.18;
+      z-index: 5;
+      animation: catFloat 6s ease-in-out infinite;
+      filter: drop-shadow(0 0 30px rgba(255,136,0,0.3));
+    }
+    @keyframes catFloat {
+      0%, 100% { transform: translateY(0px);   opacity: 0.18; }
+      50%       { transform: translateY(-14px); opacity: 0.24; }
+    }
+
+    /* ── Top Info Bar ── */
+    .top-info {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 52px;
+      background: rgba(5,5,7,0.75);
+      border-bottom: 1px solid rgba(255,136,0,0.2);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      gap: 16px;
+      z-index: 10;
+    }
+    .top-cat-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center 25%;
+      mix-blend-mode: lighten;
+      border: 1px solid rgba(255,136,0,0.4);
+      filter: drop-shadow(0 0 5px rgba(255,136,0,0.4));
+    }
+    .channel-name {
+      color: #ff8800;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 5px;
+    }
+    .live-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: auto;
+    }
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ff3333;
+      box-shadow: 0 0 8px #ff3333;
+      animation: livePulse 1.5s ease-in-out infinite;
+    }
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 8px #ff3333; }
+      50%       { opacity: 0.3; box-shadow: 0 0 3px #ff3333; }
+    }
+    .live-text {
+      color: #ff5555;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+    .top-divider {
+      width: 1px;
+      height: 24px;
+      background: rgba(255,136,0,0.2);
+    }
+    .top-label {
+      color: rgba(232,232,232,0.25);
+      font-size: 11px;
+      letter-spacing: 3px;
+    }
+
+    /* ── Bottom Info Bar ── */
+    .bottom-info {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 42px;
+      background: rgba(5,5,7,0.75);
+      border-top: 1px solid rgba(255,136,0,0.15);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      gap: 20px;
+      z-index: 10;
+    }
+    .bottom-tag {
+      color: rgba(232,232,232,0.2);
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+    .bottom-tag.accent {
+      color: rgba(255,136,0,0.4);
+    }
+    .bottom-separator {
+      color: rgba(255,136,0,0.15);
+      font-size: 10px;
+    }
+
+    /* ── Typing Cursor Effekt ── */
+    .typing-cursor::after {
+      content: '▌';
+      animation: cursorBlink 1s step-end infinite;
+      color: #ff8800;
+      opacity: 0.6;
+    }
+    @keyframes cursorBlink {
+      0%, 100% { opacity: 0.6; }
+      50%       { opacity: 0; }
+    }
+
+    /* ── Floating Shapes (groß, sehr subtil) ── */
+    .float-shape {
+      position: absolute;
+      border: 1px solid rgba(255,136,0,0.06);
+      z-index: 2;
+      animation: shapeFloat linear infinite;
+    }
+    @keyframes shapeFloat {
+      0%   { transform: translateY(0) rotate(0deg);   opacity: 0; }
+      10%  {                                           opacity: 1; }
+      90%  {                                           opacity: 1; }
+      100% { transform: translateY(-200px) rotate(20deg); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Grid -->
+  <div class="grid-bg"></div>
+
+  <!-- Particles (Canvas) -->
+  <canvas id="particles"></canvas>
+
+  <!-- Radial Glow -->
+  <div class="radial-glow"></div>
+
+  <!-- Scan Line -->
+  <div class="scan-line"></div>
+
+  <!-- Corner Brackets -->
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
+
+  <!-- HUD Dekorations-Linien -->
+  <div class="hud-line-h" style="top:150px; left:80px; width:200px; animation: none;"></div>
+  <div class="hud-line-h" style="top:150px; right:80px; width:200px; animation: none;"></div>
+  <div class="hud-line-h" style="bottom:150px; left:80px; width:150px;"></div>
+  <div class="hud-line-h" style="bottom:150px; right:80px; width:150px;"></div>
+  <div class="hud-line-v" style="left:280px; top:80px; height:120px;"></div>
+  <div class="hud-line-v" style="right:420px; top:80px; height:100px;"></div>
+
+  <!-- HUD Dots -->
+  <div class="hud-dot" style="width:4px;height:4px; top:150px; left:80px; animation-delay:0s;"></div>
+  <div class="hud-dot" style="width:3px;height:3px; top:150px; right:80px; animation-delay:1s;"></div>
+  <div class="hud-dot" style="width:4px;height:4px; bottom:150px; left:80px; animation-delay:0.5s;"></div>
+  <div class="hud-dot" style="width:3px;height:3px; top:80px; left:280px; animation-delay:1.5s;"></div>
+  <div class="hud-dot" style="width:4px;height:4px; top:80px; right:420px; animation-delay:2s;"></div>
+
+  <!-- HUD Rechteck Dekorationen -->
+  <div style="position:absolute;top:130px;left:60px;width:80px;height:30px;border:1px solid rgba(255,136,0,0.08);z-index:4;"></div>
+  <div style="position:absolute;top:130px;right:60px;width:60px;height:30px;border:1px solid rgba(255,136,0,0.08);z-index:4;"></div>
+  <div style="position:absolute;bottom:130px;right:420px;width:40px;height:40px;border:1px solid rgba(255,136,0,0.06);transform:rotate(45deg);z-index:4;"></div>
+  <div style="position:absolute;top:200px;left:100px;width:20px;height:20px;border:1px solid rgba(255,136,0,0.08);transform:rotate(45deg);z-index:4;"></div>
+
+  <!-- Katzen Mascot -->
+  <img src="assets/cat_starting.png" class="cat-bg" alt="D4RKST3R Mascot">
+
+  <!-- Top Bar -->
+  <div class="top-info">
+    <img src="assets/cat_starting.png" class="top-cat-icon" alt="D4RKST3R">
+    <span class="channel-name">D4RKST3R</span>
+    <div class="top-divider"></div>
+    <span class="top-label">GAME DESIGN &nbsp;·&nbsp; LEVEL DESIGN &nbsp;·&nbsp; DEV TALK</span>
+    <div class="live-pill">
+      <span class="live-dot"></span>
+      <span class="live-text">LIVE</span>
+    </div>
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-info">
+    <span class="bottom-tag accent">TWITCH.TV/D4RKST3R</span>
+    <span class="bottom-separator">·</span>
+    <span class="bottom-tag">GAME DESIGN</span>
+    <span class="bottom-separator">·</span>
+    <span class="bottom-tag">LEVEL DESIGN</span>
+    <span class="bottom-separator">·</span>
+    <span class="bottom-tag">DEV TALK</span>
+    <span class="bottom-tag typing-cursor" style="margin-left:auto" id="status-text"></span>
+  </div>
+
+  <script>
+    // ── Particle System ──────────────────────────────────────────
+    const canvas  = document.getElementById('particles');
+    const ctx     = canvas.getContext('2d');
+    canvas.width  = 1920;
+    canvas.height = 1080;
+
+    const PARTICLE_COUNT = 80;
+    const particles = [];
+
+    function randomBetween(a, b) {
+      return a + Math.random() * (b - a);
+    }
+
+    class Particle {
+      constructor(randomY = false) {
+        this.reset(randomY);
+      }
+
+      reset(randomY = false) {
+        this.x     = randomBetween(0, 1920);
+        this.y     = randomY ? randomBetween(0, 1080) : 1080 + randomBetween(0, 100);
+        this.size  = randomBetween(1, 3.5);
+        this.speed = randomBetween(0.3, 1.2);
+        this.drift = randomBetween(-0.3, 0.3);
+        this.alpha = randomBetween(0.1, 0.55);
+        this.fade  = randomBetween(0.002, 0.006);
+        this.type  = Math.random() > 0.75 ? 'cross' : 'circle';
+        this.life  = 1;
+      }
+
+      update() {
+        this.y     -= this.speed;
+        this.x     += this.drift;
+        this.life  -= this.fade;
+        if (this.y < -10 || this.life <= 0) this.reset();
+      }
+
+      draw() {
+        const a = this.alpha * this.life;
+        ctx.save();
+        ctx.globalAlpha = a;
+        ctx.fillStyle   = '#ff8800';
+        ctx.strokeStyle = '#ff8800';
+
+        if (this.type === 'circle') {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          // Small cross/plus
+          const s = this.size * 2;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(this.x - s, this.y);
+          ctx.lineTo(this.x + s, this.y);
+          ctx.moveTo(this.x, this.y - s);
+          ctx.lineTo(this.x, this.y + s);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+    }
+
+    // Init particles spread across screen
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push(new Particle(true));
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, 1920, 1080);
+      particles.forEach(p => { p.update(); p.draw(); });
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // ── Typing Status Text ─────────────────────────────────────
+    const statusEl = document.getElementById('status-text');
+    const statuses = [
+      'JUST CHATTING',
+      'GAME DESIGN SESSION',
+      'LEVEL DESIGN',
+      'DEV TALK',
+      'CREATING WORLDS',
+      'BUILDING DREAMS',
+    ];
+    let statusIdx = 0;
+    let charIdx   = 0;
+    let deleting  = false;
+    let pauseTick = 0;
+
+    function typeStatus() {
+      const current = statuses[statusIdx];
+
+      if (pauseTick > 0) {
+        pauseTick--;
+        setTimeout(typeStatus, 80);
+        return;
+      }
+
+      if (!deleting) {
+        statusEl.textContent = current.substring(0, ++charIdx);
+        if (charIdx === current.length) {
+          deleting  = true;
+          pauseTick = 30;
+        }
+        setTimeout(typeStatus, 80);
+      } else {
+        statusEl.textContent = current.substring(0, --charIdx);
+        if (charIdx === 0) {
+          deleting  = false;
+          statusIdx = (statusIdx + 1) % statuses.length;
+          pauseTick = 10;
+        }
+        setTimeout(typeStatus, 40);
+      }
+    }
+    typeStatus();
+  </script>
+</body>
+</html>
