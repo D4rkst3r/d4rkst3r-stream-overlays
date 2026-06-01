@@ -93,10 +93,11 @@
 
     /* Cat mascot */
     .cat-mascot {
-      width: 280px;
+      width: 320px;
       height: 320px;
       margin-bottom: 32px;
-      filter: drop-shadow(0 0 24px rgba(255,136,0,0.35));
+      mix-blend-mode: lighten;
+      filter: drop-shadow(0 0 24px rgba(255,136,0,0.4));
       animation: catGlow 3s ease-in-out infinite;
     }
     @keyframes catGlow {
@@ -172,95 +173,7 @@
   <div class="corner br"></div>
 
   <div class="content">
-    <!-- Cat Mascot SVG — sitting, paw raised -->
-    <svg class="cat-mascot" viewBox="0 0 240 280" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <filter id="glow5a">
-          <feGaussianBlur stdDeviation="3" result="b"/>
-          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-      </defs>
-
-      <!-- Octagon frame -->
-      <polygon points="68,6 172,6 234,68 234,212 172,274 68,274 6,212 6,68"
-        fill="rgba(5,5,7,0.8)" stroke="#ff8800" stroke-width="1.5" opacity="0.75" filter="url(#glow5a)"/>
-      <polygon points="76,14 164,14 222,76 222,204 164,266 76,266 18,204 18,76"
-        fill="none" stroke="#ff8800" stroke-width="0.4" opacity="0.25"/>
-
-      <!-- HUD corner ticks -->
-      <rect x="6"   y="6"   width="10" height="2.5" fill="#ff8800" opacity="0.5"/>
-      <rect x="6"   y="6"   width="2.5" height="10" fill="#ff8800" opacity="0.5"/>
-      <rect x="224" y="6"   width="10" height="2.5" fill="#ff8800" opacity="0.5"/>
-      <rect x="231.5" y="6" width="2.5" height="10" fill="#ff8800" opacity="0.5"/>
-      <rect x="6"   y="271.5" width="10" height="2.5" fill="#ff8800" opacity="0.5"/>
-      <rect x="6"   y="264"   width="2.5" height="10" fill="#ff8800" opacity="0.5"/>
-      <rect x="224" y="271.5" width="10" height="2.5" fill="#ff8800" opacity="0.5"/>
-      <rect x="231.5" y="264" width="2.5" height="10" fill="#ff8800" opacity="0.5"/>
-
-      <!-- Sparkles -->
-      <circle cx="44"  cy="52"  r="2.5" fill="#ff8800" opacity="0.6"/>
-      <circle cx="50"  cy="60"  r="1.2" fill="#ff8800" opacity="0.35"/>
-      <circle cx="37"  cy="62"  r="1.5" fill="#ff8800" opacity="0.4"/>
-      <circle cx="200" cy="48"  r="2"   fill="#ff8800" opacity="0.55"/>
-      <circle cx="207" cy="58"  r="1.2" fill="#ff8800" opacity="0.3"/>
-      <circle cx="194" cy="60"  r="1.5" fill="#ff8800" opacity="0.4"/>
-      <circle cx="38"  cy="186" r="1.5" fill="#ff8800" opacity="0.3"/>
-      <circle cx="202" cy="192" r="1.2" fill="#ff8800" opacity="0.3"/>
-
-      <!-- Cat body -->
-      <ellipse cx="118" cy="190" rx="48" ry="58" fill="#0c0c0e" stroke="#ff8800" stroke-width="0.9" opacity="1"/>
-
-      <!-- Cat head -->
-      <ellipse cx="118" cy="120" rx="44" ry="42" fill="#0c0c0e" stroke="#ff8800" stroke-width="0.9"/>
-
-      <!-- Ears -->
-      <polygon points="86,90 73,56 104,84" fill="#0c0c0e" stroke="#ff8800" stroke-width="0.9"/>
-      <polygon points="150,90 163,56 136,84" fill="#0c0c0e" stroke="#ff8800" stroke-width="0.9"/>
-      <!-- Inner ear fill -->
-      <polygon points="88,88 77,62 102,82" fill="#1e0a00" opacity="0.75"/>
-      <polygon points="148,88 159,62 138,82" fill="#1e0a00" opacity="0.75"/>
-
-      <!-- Eyes -->
-      <ellipse cx="101" cy="118" rx="9" ry="10" fill="#ff8800"/>
-      <ellipse cx="135" cy="118" rx="9" ry="10" fill="#ff8800"/>
-      <ellipse cx="101" cy="118" rx="6"   ry="8"  fill="#080808"/>
-      <ellipse cx="135" cy="118" rx="6"   ry="8"  fill="#080808"/>
-      <!-- Eye shine -->
-      <circle cx="104" cy="114" r="2.2" fill="#ff8800" opacity="0.55"/>
-      <circle cx="138" cy="114" r="2.2" fill="#ff8800" opacity="0.55"/>
-
-      <!-- Nose + mouth -->
-      <polygon points="118,131 115,136 121,136" fill="#ff8800" opacity="0.75"/>
-      <path d="M115,137 Q118,141 121,137" stroke="#ff8800" stroke-width="0.9" fill="none" opacity="0.45"/>
-
-      <!-- Whiskers -->
-      <line x1="64"  y1="128" x2="108" y2="130" stroke="#ff8800" stroke-width="0.7" opacity="0.28"/>
-      <line x1="64"  y1="136" x2="108" y2="134" stroke="#ff8800" stroke-width="0.7" opacity="0.28"/>
-      <line x1="172" y1="128" x2="128" y2="130" stroke="#ff8800" stroke-width="0.7" opacity="0.28"/>
-      <line x1="172" y1="136" x2="128" y2="134" stroke="#ff8800" stroke-width="0.7" opacity="0.28"/>
-
-      <!-- Right arm raised (waving) -->
-      <ellipse cx="162" cy="162" rx="20" ry="22" fill="#0c0c0e" stroke="#ff8800" stroke-width="0.9"/>
-      <!-- Raised paw toes -->
-      <ellipse cx="154" cy="145" rx="6.5" ry="7.5" fill="#0c0c0e" stroke="#ff8800" stroke-width="0.8"/>
-      <ellipse cx="163" cy="142" rx="6.5" ry="7.5" fill="#0c0c0e" stroke="#ff8800" stroke-width="0.8"/>
-      <ellipse cx="172" cy="146" rx="6"   ry="7"   fill="#0c0c0e" stroke="#ff8800" stroke-width="0.8"/>
-
-      <!-- Left arm resting -->
-      <ellipse cx="74"  cy="178" rx="18" ry="16" fill="#0c0c0e" stroke="#ff8800" stroke-width="0.9"/>
-
-      <!-- Star on belly -->
-      <polygon points="118,172 121,181 131,181 123.5,187 126.5,196 118,190 109.5,196 112.5,187 105,181 115,181"
-        fill="#ff8800" opacity="0.88"/>
-
-      <!-- Tail curled -->
-      <path d="M 158,238 Q 182,248 186,230 Q 190,212 174,215 Q 162,218 166,228"
-        stroke="#ff8800" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.45"/>
-
-      <!-- Body outer glow (subtle) -->
-      <ellipse cx="118" cy="190" rx="48" ry="58" fill="none" stroke="#ff8800" stroke-width="3" opacity="0.08" filter="url(#glow5a)"/>
-      <ellipse cx="118" cy="120" rx="44" ry="42" fill="none" stroke="#ff8800" stroke-width="3" opacity="0.08" filter="url(#glow5a)"/>
-    </svg>
+    <img src="../assets/cat_starting.png" class="cat-mascot" alt="D4RKST3R Mascot">
 
     <div id="loading-text"></div>
     <div id="label">STARTING SOON</div>
