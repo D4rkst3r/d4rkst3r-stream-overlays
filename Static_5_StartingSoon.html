@@ -1,395 +1,329 @@
 <!DOCTYPE html>
 <html lang="de">
-
 <head>
-    <meta charset="UTF-8">
-    <title>Starting Soon</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8">
+  <title>Starting Soon — D4RKST3R</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-            font-family: 'Courier New', monospace;
-            color: #e8e8e8;
-            overflow: hidden;
-            background: linear-gradient(-45deg, #050507, #1a1a2e, #0f3460, #050507);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-            width: 1920px;
-            height: 1080px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
+    body {
+      font-family: 'Courier New', monospace;
+      color: #e8e8e8;
+      overflow: hidden;
+      width: 1920px;
+      height: 1080px;
+      background: #050507;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      position: relative;
+    }
 
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+    /* Subtle orange center glow — matches panel aesthetic */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 60% at 50% 50%, rgba(255,136,0,0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 30% 30% at 20% 80%, rgba(255,136,0,0.03) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
 
-        /* Glowing Orbs Overlay */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(255, 136, 0, 0.08), transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(0, 150, 255, 0.06), transparent 50%),
-                radial-gradient(circle at 50% 80%, rgba(255, 136, 0, 0.04), transparent 50%);
-            pointer-events: none;
-            z-index: 0;
-        }
+    /* CSS Grid — same as Overlay */
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(0deg,   transparent 24%, rgba(255,136,0,0.03) 25%, rgba(255,136,0,0.03) 26%, transparent 27%,
+                                transparent 74%, rgba(255,136,0,0.03) 75%, rgba(255,136,0,0.03) 76%, transparent 77%),
+        linear-gradient(90deg,  transparent 24%, rgba(255,136,0,0.03) 25%, rgba(255,136,0,0.03) 26%, transparent 27%,
+                                transparent 74%, rgba(255,136,0,0.03) 75%, rgba(255,136,0,0.03) 76%, transparent 77%);
+      background-size: 80px 80px;
+      z-index: 1;
+    }
 
-        /* Styling für den Timer Text */
-        #timer-container {
-            font-size: 120px;
-            font-weight: bold;
-            color: #ff8800;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            z-index: 10;
-            position: relative;
-        }
+    /* Corner brackets — same animation as Overlay */
+    @keyframes cornerGlow {
+      0%, 100% { opacity: 0.55; box-shadow: 0 0 10px rgba(255,136,0,0.3); }
+      50%       { opacity: 1;    box-shadow: 0 0 20px rgba(255,136,0,0.6); }
+    }
 
-        /* Pulsier-Animation definieren */
-        @keyframes sanftesPulsieren {
-            0% {
-                opacity: 0.35;
-            }
+    .corner {
+      position: fixed;
+      width: 40px;
+      height: 40px;
+      z-index: 5;
+      animation: cornerGlow 3s ease-in-out infinite;
+    }
+    .corner.tl { top: 18px; left: 18px;  border-top: 2px solid #ff8800; border-left:  2px solid #ff8800; }
+    .corner.tr { top: 18px; right: 18px; border-top: 2px solid #ff8800; border-right: 2px solid #ff8800; }
+    .corner.bl { bottom: 18px; left: 18px;  border-bottom: 2px solid #ff8800; border-left:  2px solid #ff8800; }
+    .corner.br { bottom: 18px; right: 18px; border-bottom: 2px solid #ff8800; border-right: 2px solid #ff8800; }
 
-            50% {
-                opacity: 0.8;
-            }
+    /* Scan line */
+    .scan-line {
+      position: fixed;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #ff8800, transparent);
+      top: 0; left: 0;
+      z-index: 6;
+      animation: scanDown 4s infinite;
+      display: none;
+    }
+    .scan-line.active { display: block; }
+    @keyframes scanDown {
+      0%   { top: 0%;   opacity: 0.5; }
+      50%  {            opacity: 1;   }
+      100% { top: 100%; opacity: 0.5; }
+    }
 
-            100% {
-                opacity: 0.35;
-            }
-        }
+    /* Main content */
+    .content {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
 
-        #custom-text {
-            font-size: 50px;
-            margin-bottom: 20px;
-            letter-spacing: 5px;
-            z-index: 10;
-            animation: sanftesPulsieren 3s ease-in-out infinite;
-            position: relative;
-        }
+    /* Cat mascot */
+    .cat-mascot {
+      width: 280px;
+      height: 320px;
+      margin-bottom: 32px;
+      filter: drop-shadow(0 0 24px rgba(255,136,0,0.35));
+      animation: catGlow 3s ease-in-out infinite;
+    }
+    @keyframes catGlow {
+      0%, 100% { filter: drop-shadow(0 0 18px rgba(255,136,0,0.3)); }
+      50%       { filter: drop-shadow(0 0 32px rgba(255,136,0,0.55)); }
+    }
 
-        /* Loading Text Styling */
-        #loading-text {
-            font-size: 18px;
-            letter-spacing: 3px;
-            color: #ff8800;
-            text-shadow: 0 0 10px rgba(255, 136, 0, 0.5);
-            height: 24px;
-            display: none;
-            align-items: center;
-            gap: 8px;
-            justify-content: center;
-            margin-bottom: 20px;
-            z-index: 10;
-            position: relative;
-        }
+    /* Loading text */
+    #loading-text {
+      font-size: 16px;
+      letter-spacing: 3px;
+      color: #ff8800;
+      height: 22px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    #loading-text.active { display: flex; }
+    @keyframes glitch {
+      0%,100% { text-shadow: -2px 0 #ff4400, 2px 0 rgba(255,136,0,0.5); }
+      50%      { text-shadow:  2px 0 #ff4400,-2px 0 rgba(255,136,0,0.5); }
+    }
+    #loading-text.glitch { animation: glitch 0.25s; }
 
-        #loading-text.active {
-            display: flex;
-        }
+    /* "STARTING SOON" label */
+    #label {
+      color: rgba(255,136,0,0.4);
+      font-size: 16px;
+      letter-spacing: 8px;
+      margin-bottom: 12px;
+      animation: pulse 3s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:.35} 50%{opacity:.8} }
 
-        #loading-text::after {
-            content: '';
-            display: inline-block;
-            width: 12px;
-            animation: blink 0.6s infinite;
-        }
+    /* Timer */
+    #timer {
+      font-size: 112px;
+      font-weight: 700;
+      color: #ff8800;
+      letter-spacing: -4px;
+      line-height: 1;
+      text-shadow: 0 0 40px rgba(255,136,0,0.4);
+    }
 
-        @keyframes blink {
-            0%, 49% {
-                content: '▌';
-                opacity: 1;
-            }
-            50%, 100% {
-                opacity: 0;
-            }
-        }
+    /* Divider */
+    .divider {
+      width: 320px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #ff8800, transparent);
+      margin: 20px auto;
+      opacity: 0.5;
+    }
 
-        /* Glitch Effekt für Text */
-        @keyframes glitch {
-            0% {
-                text-shadow: -2px 0 #ff0000, 2px 0 #00ff00;
-            }
-            20% {
-                text-shadow: 2px 0 #ff0000, -2px 0 #00ff00;
-            }
-            40% {
-                text-shadow: -2px 0 #00ff00, 2px 0 #ff0000;
-            }
-            60% {
-                text-shadow: 2px 0 #00ff00, -2px 0 #ff0000;
-            }
-            80% {
-                text-shadow: -2px 0 #ff0000, 2px 0 #00ff00;
-            }
-            100% {
-                text-shadow: 2px 0 #ff0000, -2px 0 #00ff00;
-            }
-        }
-
-        #loading-text.glitch {
-            animation: glitch 0.3s;
-        }
-
-        /* Scan-Line Animation */
-        .scan-line {
-            position: fixed;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #ff8800, transparent);
-            top: 0;
-            left: 0;
-            z-index: 3;
-            animation: scanDown 4s infinite;
-            display: none;
-        }
-
-        .scan-line.active {
-            display: block;
-        }
-
-        @keyframes scanDown {
-            0% {
-                top: 0%;
-                opacity: 0.5;
-            }
-            50% {
-                opacity: 1;
-            }
-            100% {
-                top: 100%;
-                opacity: 0.5;
-            }
-        }
-
-        /* Dein SVG-Hintergrund und die Rahmen */
-        svg {
-            position: fixed;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            opacity: .04;
-            z-index: 1;
-        }
-
-        .corner {
-            position: fixed;
-            width: 40px;
-            height: 40px;
-            z-index: 2;
-        }
-
-        .top-left {
-            top: 18px;
-            left: 18px;
-            border-top: 2px solid #ff8800;
-            border-left: 2px solid #ff8800;
-        }
-
-        .top-right {
-            top: 18px;
-            right: 18px;
-            border-top: 2px solid #ff8800;
-            border-right: 2px solid #ff8800;
-        }
-
-        .bottom-left {
-            bottom: 18px;
-            left: 18px;
-            border-bottom: 2px solid #ff8800;
-            border-left: 2px solid #ff8800;
-        }
-
-        .bottom-right {
-            bottom: 18px;
-            right: 18px;
-            border-bottom: 2px solid #ff8800;
-            border-right: 2px solid #ff8800;
-        }
-
-        .content-wrapper {
-            position: relative;
-            z-index: 10;
-            text-align: center;
-        }
-    </style>
+    .channel { color: #c0c0c0; font-size: 28px; font-weight: 700; letter-spacing: 12px; }
+    .tagline { color: rgba(232,232,232,0.35); font-size: 12px; letter-spacing: 4px; margin-top: 8px; }
+    .twitch-url {
+      margin-top: 28px;
+      padding: 7px 20px;
+      border: 1px solid rgba(255,136,0,0.25);
+      color: rgba(255,136,0,0.6);
+      font-size: 10px;
+      letter-spacing: 3px;
+    }
+  </style>
 </head>
-
 <body>
-    <!-- Hintergrund (Dein bestehendes SVG) -->
-    <svg viewBox="0 0 1920 1080" preserveAspectRatio="none">
-        <line x1="0" y1="0" x2="0" y2="1080" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="80" y1="0" x2="80" y2="1080" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="160" y1="0" x2="160" y2="1080" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="240" y1="0" x2="240" y2="1080" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="320" y1="0" x2="320" y2="1080" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="400" y1="0" x2="400" y2="1080" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="480" y1="0" x2="480" y2="1080" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="560" y1="0" x2="560" y2="1080" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="640" y1="0" x2="640" y2="1080" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="720" y1="0" x2="720" y2="1080" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="800" y1="0" x2="800" y2="1080" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="880" y1="0" x2="880" y2="1080" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="960" y1="0" x2="960" y2="1080" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="1040" y1="0" x2="1040" y2="1080" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="1120" y1="0" x2="1120" y2="1080" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="1200" y1="0" x2="1200" y2="1080" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="1280" y1="0" x2="1280" y2="1080" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="1360" y1="0" x2="1360" y2="1080" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="1440" y1="0" x2="1440" y2="1080" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="1520" y1="0" x2="1520" y2="1080" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="1600" y1="0" x2="1600" y2="1080" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="1680" y1="0" x2="1680" y2="1080" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="1760" y1="0" x2="1760" y2="1080" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="1840" y1="0" x2="1840" y2="1080" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="1920" y1="0" x2="1920" y2="1080" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="0" y1="0" x2="1920" y2="0" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="0" y1="80" x2="1920" y2="80" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="0" y1="160" x2="1920" y2="160" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="0" y1="240" x2="1920" y2="240" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="0" y1="320" x2="1920" y2="320" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="0" y1="400" x2="1920" y2="400" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="0" y1="480" x2="1920" y2="480" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="0" y1="560" x2="1920" y2="560" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="0" y1="640" x2="1920" y2="640" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="0" y1="720" x2="1920" y2="720" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="0" y1="800" x2="1920" y2="800" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="0" y1="880" x2="1920" y2="880" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="0" y1="960" x2="1920" y2="960" stroke="#ff8800" stroke-width="0.4" />
-        <line x1="0" y1="1040" x2="1920" y2="1040" stroke="#ff8800" stroke-width="0.4" />
+  <div class="grid-bg"></div>
+  <div class="scan-line"></div>
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
+
+  <div class="content">
+    <!-- Cat Mascot SVG — sitting, paw raised -->
+    <svg class="cat-mascot" viewBox="0 0 240 280" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="glow5a">
+          <feGaussianBlur stdDeviation="3" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <!-- Octagon frame -->
+      <polygon points="68,6 172,6 234,68 234,212 172,274 68,274 6,212 6,68"
+        fill="rgba(5,5,7,0.8)" stroke="#ff8800" stroke-width="1.5" opacity="0.75" filter="url(#glow5a)"/>
+      <polygon points="76,14 164,14 222,76 222,204 164,266 76,266 18,204 18,76"
+        fill="none" stroke="#ff8800" stroke-width="0.4" opacity="0.25"/>
+
+      <!-- HUD corner ticks -->
+      <rect x="6"   y="6"   width="10" height="2.5" fill="#ff8800" opacity="0.5"/>
+      <rect x="6"   y="6"   width="2.5" height="10" fill="#ff8800" opacity="0.5"/>
+      <rect x="224" y="6"   width="10" height="2.5" fill="#ff8800" opacity="0.5"/>
+      <rect x="231.5" y="6" width="2.5" height="10" fill="#ff8800" opacity="0.5"/>
+      <rect x="6"   y="271.5" width="10" height="2.5" fill="#ff8800" opacity="0.5"/>
+      <rect x="6"   y="264"   width="2.5" height="10" fill="#ff8800" opacity="0.5"/>
+      <rect x="224" y="271.5" width="10" height="2.5" fill="#ff8800" opacity="0.5"/>
+      <rect x="231.5" y="264" width="2.5" height="10" fill="#ff8800" opacity="0.5"/>
+
+      <!-- Sparkles -->
+      <circle cx="44"  cy="52"  r="2.5" fill="#ff8800" opacity="0.6"/>
+      <circle cx="50"  cy="60"  r="1.2" fill="#ff8800" opacity="0.35"/>
+      <circle cx="37"  cy="62"  r="1.5" fill="#ff8800" opacity="0.4"/>
+      <circle cx="200" cy="48"  r="2"   fill="#ff8800" opacity="0.55"/>
+      <circle cx="207" cy="58"  r="1.2" fill="#ff8800" opacity="0.3"/>
+      <circle cx="194" cy="60"  r="1.5" fill="#ff8800" opacity="0.4"/>
+      <circle cx="38"  cy="186" r="1.5" fill="#ff8800" opacity="0.3"/>
+      <circle cx="202" cy="192" r="1.2" fill="#ff8800" opacity="0.3"/>
+
+      <!-- Cat body -->
+      <ellipse cx="118" cy="190" rx="48" ry="58" fill="#0c0c0e" stroke="#ff8800" stroke-width="0.9" opacity="1"/>
+
+      <!-- Cat head -->
+      <ellipse cx="118" cy="120" rx="44" ry="42" fill="#0c0c0e" stroke="#ff8800" stroke-width="0.9"/>
+
+      <!-- Ears -->
+      <polygon points="86,90 73,56 104,84" fill="#0c0c0e" stroke="#ff8800" stroke-width="0.9"/>
+      <polygon points="150,90 163,56 136,84" fill="#0c0c0e" stroke="#ff8800" stroke-width="0.9"/>
+      <!-- Inner ear fill -->
+      <polygon points="88,88 77,62 102,82" fill="#1e0a00" opacity="0.75"/>
+      <polygon points="148,88 159,62 138,82" fill="#1e0a00" opacity="0.75"/>
+
+      <!-- Eyes -->
+      <ellipse cx="101" cy="118" rx="9" ry="10" fill="#ff8800"/>
+      <ellipse cx="135" cy="118" rx="9" ry="10" fill="#ff8800"/>
+      <ellipse cx="101" cy="118" rx="6"   ry="8"  fill="#080808"/>
+      <ellipse cx="135" cy="118" rx="6"   ry="8"  fill="#080808"/>
+      <!-- Eye shine -->
+      <circle cx="104" cy="114" r="2.2" fill="#ff8800" opacity="0.55"/>
+      <circle cx="138" cy="114" r="2.2" fill="#ff8800" opacity="0.55"/>
+
+      <!-- Nose + mouth -->
+      <polygon points="118,131 115,136 121,136" fill="#ff8800" opacity="0.75"/>
+      <path d="M115,137 Q118,141 121,137" stroke="#ff8800" stroke-width="0.9" fill="none" opacity="0.45"/>
+
+      <!-- Whiskers -->
+      <line x1="64"  y1="128" x2="108" y2="130" stroke="#ff8800" stroke-width="0.7" opacity="0.28"/>
+      <line x1="64"  y1="136" x2="108" y2="134" stroke="#ff8800" stroke-width="0.7" opacity="0.28"/>
+      <line x1="172" y1="128" x2="128" y2="130" stroke="#ff8800" stroke-width="0.7" opacity="0.28"/>
+      <line x1="172" y1="136" x2="128" y2="134" stroke="#ff8800" stroke-width="0.7" opacity="0.28"/>
+
+      <!-- Right arm raised (waving) -->
+      <ellipse cx="162" cy="162" rx="20" ry="22" fill="#0c0c0e" stroke="#ff8800" stroke-width="0.9"/>
+      <!-- Raised paw toes -->
+      <ellipse cx="154" cy="145" rx="6.5" ry="7.5" fill="#0c0c0e" stroke="#ff8800" stroke-width="0.8"/>
+      <ellipse cx="163" cy="142" rx="6.5" ry="7.5" fill="#0c0c0e" stroke="#ff8800" stroke-width="0.8"/>
+      <ellipse cx="172" cy="146" rx="6"   ry="7"   fill="#0c0c0e" stroke="#ff8800" stroke-width="0.8"/>
+
+      <!-- Left arm resting -->
+      <ellipse cx="74"  cy="178" rx="18" ry="16" fill="#0c0c0e" stroke="#ff8800" stroke-width="0.9"/>
+
+      <!-- Star on belly -->
+      <polygon points="118,172 121,181 131,181 123.5,187 126.5,196 118,190 109.5,196 112.5,187 105,181 115,181"
+        fill="#ff8800" opacity="0.88"/>
+
+      <!-- Tail curled -->
+      <path d="M 158,238 Q 182,248 186,230 Q 190,212 174,215 Q 162,218 166,228"
+        stroke="#ff8800" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.45"/>
+
+      <!-- Body outer glow (subtle) -->
+      <ellipse cx="118" cy="190" rx="48" ry="58" fill="none" stroke="#ff8800" stroke-width="3" opacity="0.08" filter="url(#glow5a)"/>
+      <ellipse cx="118" cy="120" rx="44" ry="42" fill="none" stroke="#ff8800" stroke-width="3" opacity="0.08" filter="url(#glow5a)"/>
     </svg>
 
-    <!-- Scan Line Animation -->
-    <div class="scan-line"></div>
+    <div id="loading-text"></div>
+    <div id="label">STARTING SOON</div>
+    <div id="timer">00:00</div>
+    <div class="divider"></div>
+    <div class="channel">D4RKST3R</div>
+    <div class="tagline" id="tagline-text">GAME DESIGN &nbsp;·&nbsp; LEVEL DESIGN &nbsp;·&nbsp; DEV TALK</div>
+    <div class="twitch-url">TWITCH.TV/D4RKST3R</div>
+  </div>
 
-    <!-- Deine Rahmen-Ecken -->
-    <div class="corner top-left"></div>
-    <div class="corner top-right"></div>
-    <div class="corner bottom-left"></div>
-    <div class="corner bottom-right"></div>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const timerMinutes = parseInt(params.get('time')) || 5;
+    const customText   = params.get('text') || 'STARTING SOON';
+    const tagline      = params.get('tagline') || 'GAME DESIGN · LEVEL DESIGN · DEV TALK';
+    const loadingMode  = params.get('loading') === 'true';
+    const scanMode     = params.get('scan')    === 'true';
 
-    <div class="content-wrapper">
-        <img src="logo.png" alt="Logo" style="width:160px;height:160px;object-fit:contain;filter:drop-shadow(0 0 20px rgba(255,136,0,.6));margin-bottom:24px">
+    document.getElementById('label').textContent   = customText;
+    document.getElementById('tagline-text').textContent = tagline;
 
-        <!-- Das Container-Element, in das wir den Timer und den Text schreiben -->
-        <div id="loading-text"></div>
-        <div id="custom-text" style="color:rgba(255,136,0,.35);font-size:20px;letter-spacing:6px;margin-bottom:14px">
-            STARTING SOON</div>
-        <div id="timer-container">00:00</div>
-        <div
-            style="margin:20px auto;width:320px;height:1px;background:linear-gradient(90deg,transparent,#ff8800,transparent)">
-        </div>
-        <div style="color:#c0c0c0;font-size:28px;font-weight:700;letter-spacing:12px">D4RKST3R</div>
-        <div style="color:rgba(232,232,232,.35);font-size:12px;letter-spacing:4px;margin-top:8px">GAME DESIGN &nbsp;·&nbsp;
-            LEVEL DESIGN &nbsp;·&nbsp; DEV TALK</div>
-        <div
-            style="margin-top:28px;padding:7px 20px;border:1px solid rgba(255,136,0,.25);color:rgba(255,136,0,.6);font-size:10px;letter-spacing:3px">
-            TWITCH.TV/D4RKST3R</div>
-    </div>
+    if (scanMode) document.querySelector('.scan-line').classList.add('active');
 
-    <!-- Das JavaScript, das die URL ausliest und den Timer steuert -->
-    <script>
-        // 1. URL-Parameter auslesen
-        const urlParams = new URLSearchParams(window.location.search);
+    // Countdown
+    let remaining = timerMinutes * 60;
+    const timerEl = document.getElementById('timer');
 
-        // 2. Zeit in Minuten aus URL holen (Standard: 5 Minuten, wenn nichts angegeben ist)
-        const timerMinutes = parseInt(urlParams.get('time')) || 5;
+    function tick() {
+      if (remaining < 0) { timerEl.textContent = '00:00'; return; }
+      const m = String(Math.floor(remaining / 60)).padStart(2, '0');
+      const s = String(remaining % 60).padStart(2, '0');
+      timerEl.textContent = m + ':' + s;
+      remaining--;
+    }
+    tick();
+    setInterval(tick, 1000);
 
-        // 3. Optionalen Text aus URL holen (Standard: "STARTING SOON")
-        const customText = urlParams.get('text') || "STARTING SOON";
-
-        // 4. Loading-Modus aktivieren? (Standard: false)
-        const loadingMode = urlParams.get('loading') === 'true';
-
-        // Den Text im HTML anpassen
-        document.getElementById('custom-text').innerText = customText;
-
-        // 4. Timer-Logik
-        // Wir rechnen die Minuten in Sekunden um (z.B. 5 Min = 300 Sek)
-        let totalSeconds = timerMinutes * 60;
-        const timerDisplay = document.getElementById('timer-container');
-
-        // Funktion, um den Timer zu formatieren (z.B. "05:00")
-        function updateTimerDisplay() {
-            let m = Math.floor(totalSeconds / 60);
-            let s = totalSeconds % 60;
-
-            // Führende Nullen hinzufügen (z.B. "5" -> "05")
-            m = m < 10 ? "0" + m : m;
-            s = s < 10 ? "0" + s : s;
-
-            timerDisplay.innerText = m + ":" + s;
+    // Loading messages
+    if (loadingMode) {
+      const loadEl = document.getElementById('loading-text');
+      loadEl.classList.add('active');
+      const msgs = [
+        '> INITIALIZING SERVER...',
+        '> LOADING LORE FRIENDLY ASSETS...',
+        '> COMPILING SHADERS...',
+        '> SYNCING GITHUB REPOSITORIES...',
+        '> MOUNTING QBCORE FRAMEWORK...',
+        '> VERIFYING STREAM INTEGRITY...',
+        '> OPTIMIZING VIDEO CODEC...',
+        '> LOADING OVERLAY MODULES...',
+        '> FINALIZING SYSTEM BOOT...',
+      ];
+      let i = 0;
+      function nextMsg() {
+        loadEl.textContent = msgs[i++ % msgs.length];
+        if (Math.random() > 0.7) {
+          loadEl.classList.add('glitch');
+          setTimeout(() => loadEl.classList.remove('glitch'), 250);
         }
-
-        // Erstmaliges Anzeigen vor dem Start
-        updateTimerDisplay();
-
-        // Der eigentliche Countdown
-        const countdownInterval = setInterval(() => {
-            totalSeconds--;
-
-            if (totalSeconds < 0) {
-                // Timer ist abgelaufen
-                clearInterval(countdownInterval);
-                timerDisplay.innerText = "00:00"; // Oder ein anderer Text wie "GO!"
-            } else {
-                updateTimerDisplay();
-            }
-        }, 1000); // 1000 ms = 1 Sekunde
-
-        if (loadingMode) {
-            // Loading-Modus aktivieren
-            document.getElementById('loading-text').classList.add('active');
-            document.querySelector('.scan-line').classList.add('active');
-
-            const loadingMessages = [
-                "> INITIALIZING EMOTIONALDICE SERVER...",
-                "> LOADING LORE FRIENDLY ASSETS...",
-                "> COMPILING SHADERS...",
-                "> SYNCING GITHUB REPOSITORIES...",
-                "> MOUNTING QBCORE FRAMEWORK...",
-                "> VERIFYING STREAM INTEGRITY...",
-                "> OPTIMIZING VIDEO CODEC...",
-                "> LOADING OVERLAY MODULES...",
-                "> FINALIZING SYSTEM BOOT...",
-            ];
-
-            const loadingTextElement = document.getElementById('loading-text');
-            let currentMessageIndex = 0;
-
-            // Funktion zum Wechseln der Loading-Nachricht
-            function updateLoadingMessage() {
-                loadingTextElement.textContent = loadingMessages[currentMessageIndex];
-
-                // Zufälliger Glitch-Effekt
-                if (Math.random() > 0.7) {
-                    loadingTextElement.classList.add('glitch');
-                    setTimeout(() => {
-                        loadingTextElement.classList.remove('glitch');
-                    }, 300);
-                }
-
-                currentMessageIndex = (currentMessageIndex + 1) % loadingMessages.length;
-            }
-
-            // Initial
-            updateLoadingMessage();
-
-            // Loading Text alle 1.5 Sekunden wechseln
-            setInterval(updateLoadingMessage, 1500);
-        }
-    </script>
+      }
+      nextMsg();
+      setInterval(nextMsg, 1500);
+    }
+  </script>
 </body>
-
 </html>
