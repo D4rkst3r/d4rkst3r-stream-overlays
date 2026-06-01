@@ -72,30 +72,6 @@
       animation: cornerGlowCyan 3s ease-in-out infinite 0.5s;
     }
 
-    /* ── Dual Scan Line (Orange → Cyan) ── */
-    .scan-line {
-      position: absolute;
-      width: 100%;
-      height: 2px;
-      top: 0; left: 0;
-      z-index: 3;
-      animation: scanDown 4s linear infinite;
-    }
-    .scan-line.orange {
-      background: linear-gradient(90deg, transparent, var(--orange), transparent);
-      animation-delay: 0s;
-    }
-    .scan-line.cyan {
-      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
-      animation-delay: 2s;
-      opacity: 0;
-    }
-    @keyframes scanDown {
-      0%   { top: 0%;   opacity: 0; }
-      5%   {            opacity: 0.6; }
-      95%  {            opacity: 0.6; }
-      100% { top: 100%; opacity: 0; }
-    }
 
     /* ── TOP BAR ── */
     .top-bar {
@@ -292,10 +268,6 @@
   <div style="position:absolute;inset:0;">
 
     <div class="grid-bg"></div>
-
-    <!-- Dual Scan Lines -->
-    <div class="scan-line orange"></div>
-    <div class="scan-line cyan"></div>
 
     <!-- Corners: Orange links, Cyan rechts -->
     <div class="corner tl"></div>
