@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Peak RP Overlay — D4RKST3R</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange: #ff8800;
+      --cyan:   #00d4ff;
+      --bg:     rgba(5,5,7,0.82);
+      --text:   #e8e8e8;
+    }
+
+    body {
+      font-family: 'Courier New', monospace;
+      color: var(--text);
+      overflow: hidden;
+      background: transparent;
+      width: 1920px;
+      height: 1080px;
+    }
+
+    /* ── CSS Grid ── */
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(0deg,   transparent 24%, rgba(0,212,255,0.025) 25%, rgba(0,212,255,0.025) 26%, transparent 27%,
+                                transparent 74%, rgba(0,212,255,0.025) 75%, rgba(0,212,255,0.025) 76%, transparent 77%),
+        linear-gradient(90deg,  transparent 24%, rgba(255,136,0,0.025) 25%, rgba(255,136,0,0.025) 26%, transparent 27%,
+                                transparent 74%, rgba(255,136,0,0.025) 75%, rgba(255,136,0,0.025) 76%, transparent 77%);
+      background-size: 80px 80px;
+      z-index: 1;
+    }
+
+    /* ── Corners — links Orange (D4RKST3R), rechts Cyan (Peak) ── */
+    @keyframes cornerGlowOrange {
+      0%, 100% { opacity: 0.6; box-shadow: 0 0 10px rgba(255,136,0,0.4); }
+      50%       { opacity: 1;   box-shadow: 0 0 22px rgba(255,136,0,0.7); }
+    }
+    @keyframes cornerGlowCyan {
+      0%, 100% { opacity: 0.6; box-shadow: 0 0 10px rgba(0,212,255,0.4); }
+      50%       { opacity: 1;   box-shadow: 0 0 22px rgba(0,212,255,0.7); }
+    }
+
+    .corner {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      z-index: 2;
+    }
+    .corner.tl {
+      top: 18px; left: 18px;
+      border-top: 2px solid var(--orange); border-left: 2px solid var(--orange);
+      animation: cornerGlowOrange 3s ease-in-out infinite;
+    }
+    .corner.bl {
+      bottom: 18px; left: 18px;
+      border-bottom: 2px solid var(--orange); border-left: 2px solid var(--orange);
+      animation: cornerGlowOrange 3s ease-in-out infinite 0.5s;
+    }
+    .corner.tr {
+      top: 18px; right: 18px;
+      border-top: 2px solid var(--cyan); border-right: 2px solid var(--cyan);
+      animation: cornerGlowCyan 3s ease-in-out infinite;
+    }
+    .corner.br {
+      bottom: 18px; right: 18px;
+      border-bottom: 2px solid var(--cyan); border-right: 2px solid var(--cyan);
+      animation: cornerGlowCyan 3s ease-in-out infinite 0.5s;
+    }
+
+    /* ── Dual Scan Line (Orange → Cyan) ── */
+    .scan-line {
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      top: 0; left: 0;
+      z-index: 3;
+      animation: scanDown 4s linear infinite;
+    }
+    .scan-line.orange {
+      background: linear-gradient(90deg, transparent, var(--orange), transparent);
+      animation-delay: 0s;
+    }
+    .scan-line.cyan {
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      animation-delay: 2s;
+      opacity: 0;
+    }
+    @keyframes scanDown {
+      0%   { top: 0%;   opacity: 0; }
+      5%   {            opacity: 0.6; }
+      95%  {            opacity: 0.6; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    /* ── TOP BAR ── */
+    .top-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 56px;
+      background: var(--bg);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 12px;
+      z-index: 10;
+    }
+
+    /* Left: D4RKST3R Brand */
+    .brand-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .cat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center 25%;
+      mix-blend-mode: lighten;
+      border: 1px solid rgba(255,136,0,0.5);
+      filter: drop-shadow(0 0 6px rgba(255,136,0,0.5));
+    }
+    .channel-name {
+      color: var(--orange);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 5px;
+    }
+
+    /* Divider */
+    .top-divider {
+      width: 1px;
+      height: 28px;
+      background: rgba(255,255,255,0.08);
+      flex-shrink: 0;
+    }
+
+    /* Center: Marquee */
+    .marquee-wrap {
+      flex: 1;
+      overflow: hidden;
+      white-space: nowrap;
+      font-size: 11px;
+      color: rgba(232,232,232,0.1);
+    }
+    @keyframes marquee {
+      0%   { transform: translateX(100%);  }
+      100% { transform: translateX(-100%); }
+    }
+    .marquee-text {
+      display: inline-block;
+      animation: marquee 18s linear infinite;
+      padding-left: 100%;
+    }
+
+    /* Right: Peak RP Brand */
+    .brand-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .playing-on {
+      color: rgba(0,212,255,0.45);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .peak-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid rgba(0,212,255,0.45);
+      filter: drop-shadow(0 0 6px rgba(0,212,255,0.5));
+    }
+
+    /* Live Indicator */
+    .live-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: 8px;
+      flex-shrink: 0;
+    }
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ff3333;
+      box-shadow: 0 0 8px #ff3333;
+      animation: livePulse 1.5s ease-in-out infinite;
+    }
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 8px #ff3333; }
+      50%       { opacity: 0.3; box-shadow: 0 0 3px #ff3333; }
+    }
+    .live-text {
+      color: #ff5555;
+      font-size: 10px;
+      letter-spacing: 2px;
+      font-weight: 700;
+    }
+
+    /* ── BOTTOM BAR ── */
+    .bottom-bar {
+      position: absolute;
+      bottom: 22px; left: 22px; right: 22px;
+      height: 50px;
+      background: rgba(5,5,7,0.78);
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+      gap: 14px;
+      z-index: 10;
+      animation: bottomGlow 3s ease-in-out infinite;
+    }
+    @keyframes bottomGlow {
+      0%, 100% { border: 1px solid rgba(255,136,0,0.18); }
+      50%       { border: 1px solid rgba(0,212,255,0.22); }
+    }
+
+    .bottom-cat {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center 25%;
+      mix-blend-mode: lighten;
+      opacity: 0.8;
+    }
+    .bottom-divider {
+      width: 1px;
+      height: 22px;
+      background: rgba(255,136,0,0.25);
+    }
+    .bottom-divider.cyan {
+      background: rgba(0,212,255,0.25);
+    }
+    .now-playing-label {
+      color: var(--orange);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .now-playing-text {
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 700;
+      min-width: 180px;
+    }
+
+    /* Peak RP Badge rechts */
+    .peak-badge {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .peak-badge img {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+      filter: drop-shadow(0 0 5px rgba(0,212,255,0.6));
+    }
+    .peak-url {
+      color: rgba(0,212,255,0.55);
+      font-size: 10px;
+      letter-spacing: 2px;
+      font-weight: 700;
+    }
+
+    /* Stream category */
+    .stream-category {
+      color: rgba(232,232,232,0.35);
+      font-size: 11px;
+      letter-spacing: 2px;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <div style="position:absolute;inset:0;">
+
+    <div class="grid-bg"></div>
+
+    <!-- Dual Scan Lines -->
+    <div class="scan-line orange"></div>
+    <div class="scan-line cyan"></div>
+
+    <!-- Corners: Orange links, Cyan rechts -->
+    <div class="corner tl"></div>
+    <div class="corner bl"></div>
+    <div class="corner tr"></div>
+    <div class="corner br"></div>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+      <!-- D4RKST3R Brand (links) -->
+      <div class="brand-left">
+        <img src="assets/cat_starting.png" class="cat-icon" alt="D4RKST3R">
+        <span class="channel-name">D4RKST3R</span>
+      </div>
+
+      <div class="top-divider"></div>
+
+      <!-- Marquee (Mitte) -->
+      <div class="marquee-wrap">
+        <span class="marquee-text" id="marquee-content">──────────────────────────────────────────────────────────────────────────────────────────────</span>
+      </div>
+
+      <span class="stream-category" id="stream-category">PEAK RP — GAME DESIGN</span>
+
+      <div class="top-divider"></div>
+
+      <!-- Peak RP Brand (rechts) -->
+      <div class="brand-right">
+        <span class="playing-on">PLAYING ON</span>
+        <img src="assets/peak_logo.png" class="peak-icon" alt="Peak RP">
+      </div>
+
+      <!-- Live -->
+      <div class="live-indicator">
+        <span class="live-dot"></span>
+        <span class="live-text">LIVE</span>
+      </div>
+    </div>
+
+    <!-- BOTTOM BAR -->
+    <div class="bottom-bar">
+      <img src="assets/cat_starting.png" class="bottom-cat" alt="D4RKST3R">
+      <div class="bottom-divider"></div>
+      <span class="now-playing-label">NOW PLAYING</span>
+      <span class="now-playing-text" id="now-playing">GTA5 / Peak RP</span>
+
+      <!-- Peak RP Badge rechts -->
+      <div class="peak-badge">
+        <div class="bottom-divider cyan"></div>
+        <img src="assets/peak_logo.png" alt="Peak RP">
+        <span class="peak-url">PEAK-RP.DE</span>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+
+    const game     = params.get('game')     || 'GTA5 / Peak RP';
+    const category = params.get('category') || 'PEAK RP — GAME DESIGN';
+    const marquee  = params.get('marquee')  || '──────────────────────────────────────────────────────────────────────────────────────────────';
+    const animateMarquee = params.get('animate-marquee') !== 'false';
+
+    document.getElementById('now-playing').textContent   = game;
+    document.getElementById('stream-category').textContent = category;
+
+    const marqueeEl = document.getElementById('marquee-content');
+    marqueeEl.textContent = marquee + '  ' + marquee + '  ' + marquee;
+    if (!animateMarquee) marqueeEl.style.animation = 'none';
+
+    // Game Rotation (optional)
+    const games    = params.get('games');
+    const interval = parseInt(params.get('interval')) || 0;
+    if (games && interval > 0) {
+      const list = games.split(',');
+      let idx = 0;
+      const el = document.getElementById('now-playing');
+      setInterval(() => {
+        idx = (idx + 1) % list.length;
+        el.textContent = list[idx];
+      }, interval * 1000);
+    }
+  </script>
+</body>
+</html>
