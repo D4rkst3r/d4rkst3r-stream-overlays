@@ -590,6 +590,26 @@
       z-index: 10;
     }
 
+    /* ═══════════ Einzel-Komponenten (?part=unit|quests|toast|logo) ═══════════
+       Jede Komponente sitzt oben links in einer kleinen Fläche → in OBS als eigene Browserquelle frei positionierbar.
+       Empfohlene Quellgrößen: unit 680×150 · quests 420×640 · toast 640×160 · logo 230×210 */
+    body.part:not(.part-unit)   .unit      { display: none; }
+    body.part:not(.part-quests) .panel     { display: none; }
+    body.part:not(.part-toast)  .toast     { display: none; }
+    body.part:not(.part-logo)   .game-logo { display: none; }
+
+    body.part-unit   { width: 680px; height: 150px; }
+    body.part-unit .unit { left: 10px; top: 12px; transform: none; }
+
+    body.part-quests { width: 420px; height: 640px; }
+    body.part-quests .panel { left: 22px; right: auto; top: 30px; }
+
+    body.part-toast  { width: 640px; height: 160px; }
+    body.part-toast .toast { top: 22px; }
+
+    body.part-logo   { width: 230px; height: 210px; }
+    body.part-logo .game-logo { left: 20px; top: 16px; right: auto; bottom: auto; }
+
     /* ═══════════ Vorschau: Spiel-UI-Zonen ═══════════ */
     .guide {
       display: none;

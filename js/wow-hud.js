@@ -1,8 +1,8 @@
 /*
   WoW Forever HUD — gemeinsame Logik für Static_9_WoWForever.html + Static_10_WoWStyle.html
   ───────────────────────────────────────────────────────────────────────────────────────
-  Live-Daten kommen aus dem Streambot (/api/public/overlay/stats + /labels).
-  → Muss unter streambot.d4rkst3r.de/overlays/ laufen (CORS), sonst nur statisch.
+  Gehostet auf GitHub Pages; Live-Daten kommen aus dem Streambot (/api/public/overlay/stats + /labels,
+  die public Endpoints erlauben CORS von jeder Domain).
 
   Skin-Optionen (data-Attribute am <body>):
     data-sub-quest="1"      Sub-Ziel als Quest im Tracker (Standard 1)
@@ -11,6 +11,8 @@
     data-sub-label="…"      Beschriftung der Sub-Leiste (Standard "Abonnenten", nur wenn #subBar existiert)
 
   URL-Parameter:
+    part=…          Nur eine Komponente zeigen (eigene OBS-Browserquelle), Quellgrößen für Static_10:
+                      unit 680×150 · quests 420×640 · toast 640×160 · logo 230×210
     demo            Fake-Daten + simulierte Events (zum Testen/Vorschau)
     guide=1         Spiel-UI-Zonen einblenden (bei demo automatisch an, guide=0 = aus)
     fit             Seite auf Fenstergröße skalieren (Browser-Vorschau)
@@ -31,7 +33,7 @@
     panelY=420      Y-Position des Quest-Panels
     side=right      Quest-Panel rechts statt links
     start=19:30     /played-Startzeit (Standard: Laden der Quelle)
-    api=https://…   API-Basis (Standard: gleiche Domain)
+    api=https://…   API-Basis (Standard: https://streambot.d4rkst3r.de, auf der Streambot-Domain selbst relativ)
     poll=10         Abfrage-Intervall in Sekunden
     reset=1         Gespeichertes Level + Quest-Haken zurücksetzen
 */
@@ -39,7 +41,12 @@
   const P    = new URLSearchParams(location.search);
   const B    = document.body.dataset;
   const DEMO = P.has('demo');
-  const API  = (P.get('api') || '').replace(/\/$/, '');
+  // Overlays laufen auf GitHub Pages, die Daten kommen vom Streambot (public Endpoints erlauben CORS)
+  const STREAMBOT = 'https://streambot.d4rkst3r.de';
+  const API  = (P.get('api') ?? (location.hostname === 'streambot.d4rkst3r.de' ? '' : STREAMBOT)).replace(/\/$/, '');
+  // Einzel-Komponente für eigene OBS-Browserquelle: ?part=unit|quests|toast|logo
+  const PART = ['unit', 'quests', 'toast', 'logo'].includes((P.get('part') || '').toLowerCase())
+    ? P.get('part').toLowerCase() : '';
   const HC   = P.get('hc') === '1';
   const MAX_LVL = parseInt(P.get('max'), 10) || 60;
   const POLL_MS = Math.max(5, parseInt(P.get('poll'), 10) || 10) * 1000;
@@ -82,8 +89,9 @@
   }
 
   // ── Layout-Optionen ──
-  if (P.get('guide') === '1' || (DEMO && P.get('guide') !== '0')) document.body.classList.add('guide-on');
-  if (P.has('fit')) {
+  if (PART) document.body.classList.add('part', 'part-' + PART);
+  if (!PART && (P.get('guide') === '1' || (DEMO && P.get('guide') !== '0'))) document.body.classList.add('guide-on');
+  if (!PART && P.has('fit')) {
     const s = Math.min(innerWidth / 1920, innerHeight / 1080);
     document.body.style.transformOrigin = 'top left';
     document.body.style.transform = `scale(${s})`;
@@ -92,7 +100,7 @@
   if (P.get('xp') === '0') { $('xp')?.classList.add('hidden'); $('subBar')?.classList.add('hidden'); }
   if (P.get('side') === 'right') $('panel')?.classList.add('right');
   const panelY = parseInt(P.get('panelY'), 10);
-  if (panelY && $('panel')) $('panel').style.top = panelY + 'px';
+  if (panelY && $('panel') && !PART) $('panel').style.top = panelY + 'px';
 
   // ── Plakette / Unit-Frame ──
   $('name').textContent = P.get('name') || 'D4RKST3R';
@@ -172,27 +180,36 @@
   // ── Level (Klick aufs Portrait in OBS "Interagieren") ──
   const clampLvl = n => Math.min(MAX_LVL, Math.max(1, n | 0));
   let level = clampLvl(store.get('lvl', parseInt(P.get('lvl'), 10) || (DEMO ? 34 : 1)));
+  // Liefert der Streambot ein Level (stats.level), hat es Vorrang — Portrait-Klick ist dann aus
+  let serverLevel = false, prevServerLevel = null;
   function renderLevel(pop) {
     const el = $('lvl');
     el.textContent = level;
     if (pop) { el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
   }
+  const levelToast = () => ({
+    kind: 'ding', q: 'legendary', icon: '▲', head: 'Stufe aufgestiegen!',
+    img: level >= MAX_LVL ? 'achievement_level_60' : 'spell_holy_surgeoflight',
+    item: `Stufe ${level}`,
+    who: level >= MAX_LVL ? 'Maximalstufe erreicht — für die Allianz!' : 'Ding! GZ in den Chat!',
+    ms: 6500,
+  });
+  const questToast = t => ({
+    kind: 'quest', q: 'quest', icon: '❖', img: 'inv_scroll_03',
+    head: 'Quest abgeschlossen', item: t, who: '+ Ruhm & Ehre',
+  });
+
   $('portrait').addEventListener('click', () => {
-    if (level >= MAX_LVL) return;
+    if (serverLevel || level >= MAX_LVL) return;
     level = clampLvl(level + 1);
     store.set('lvl', level);
     renderLevel(true);
     renderQuests();
-    toast({
-      kind: 'ding', q: 'legendary', icon: '▲', head: 'Stufe aufgestiegen!',
-      img: level >= MAX_LVL ? 'achievement_level_60' : 'spell_holy_surgeoflight',
-      item: `Stufe ${level}`,
-      who: level >= MAX_LVL ? 'Maximalstufe erreicht — für die Allianz!' : 'Ding! GZ in den Chat!',
-      ms: 6500,
-    });
+    toast(levelToast());
   });
   $('portrait').addEventListener('contextmenu', e => {
     e.preventDefault();
+    if (serverLevel) return;
     level = clampLvl(level - 1);
     store.set('lvl', level);
     renderLevel(false);
@@ -293,10 +310,29 @@
     store.set('q:' + t, done);
     if (done) {
       flashQuest = t;
-      toast({ kind: 'quest', q: 'quest', icon: '❖', img: 'inv_scroll_03',
-              head: 'Quest abgeschlossen', item: t, who: '+ Ruhm & Ehre' });
+      toast(questToast(t));
     }
     renderQuests();
+  });
+
+  // ── Abgleich zwischen mehreren Browserquellen: OBS teilt localStorage pro Domain,
+  //    andere Quellen bekommen Änderungen per 'storage'-Event (z.B. Klick im Unit-Frame → Banner in der Toast-Quelle) ──
+  window.addEventListener('storage', e => {
+    if (DEMO || !e.key || !e.key.startsWith('wowf:')) return;
+    const key = e.key.slice(5);
+    let val = null;
+    try { val = e.newValue === null ? null : JSON.parse(e.newValue); } catch {}
+    if (key === 'lvl' && !serverLevel) {
+      const old = level;
+      level = clampLvl(val ?? 1);
+      renderLevel(level > old);
+      renderQuests();
+      if (level > old) toast(levelToast());
+    } else if (key.startsWith('q:')) {
+      if (val) flashQuest = key.slice(2);
+      renderQuests();
+      if (val) toast(questToast(key.slice(2)));
+    }
   });
 
   // ── Beute (letzte Events in Item-Qualität) ──
@@ -397,6 +433,23 @@
               who: `Tod Nr. ${s.deaths}` });
       }
       prevDeaths = state.deaths = s.deaths;
+    }
+    // Level vom Streambot (z.B. per !ding / !level gesetzt) — nicht in localStorage, jede Quelle pollt selbst
+    if (Number.isFinite(s.level)) {
+      serverLevel = true;
+      const lv = clampLvl(s.level);
+      if (lv !== level) {
+        const up = prevServerLevel != null && lv > level;
+        level = lv;
+        renderLevel(up);
+        if (up) toast(levelToast());
+      }
+      prevServerLevel = lv;
+    }
+    // Echte Stream-Laufzeit für /played (außer ?start= ist gesetzt)
+    if (s.startedAt && !start) {
+      const t = Date.parse(s.startedAt);
+      if (t) t0 = t;
     }
     document.body.classList.toggle('fallen', HC && (state.deaths || 0) > 0);
     renderBars();
