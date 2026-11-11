@@ -1,8 +1,12 @@
 /*
   WoW Forever HUD — gemeinsame Logik für Static_9_WoWForever.html + Static_10_WoWStyle.html
   ───────────────────────────────────────────────────────────────────────────────────────
-  Gehostet auf GitHub Pages; Live-Daten kommen aus dem Streambot (/api/public/overlay/stats + /labels,
-  die public Endpoints erlauben CORS von jeder Domain).
+  Gehostet auf GitHub Pages; Live-Daten kommen aus dem Streambot (public Endpoints erlauben CORS von jeder Domain):
+    /api/public/overlay/stats   alle 10 s — Follower, Subs, Tode, Live, level, startedAt
+    /api/public/labels          alle 10 s — nur für die Beute-Liste
+    /api/public/events          alle 2 s  — Event-Feed (Start-ID über /events/latest-id) → Toasts + Sounds
+    /api/public/alert-config    alle 60 s — Sound-URLs + Lautstärke aus dem Dashboard
+  Toasts, Event-Feed und Sounds laufen nur im Komplett-Overlay oder in der Quelle mit part=toast.
 
   Skin-Optionen (data-Attribute am <body>):
     data-sub-quest="1"      Sub-Ziel als Quest im Tracker (Standard 1)
@@ -29,7 +33,8 @@
     subGoal=30      Sub-Ziel (Standard: automatisch)
     q=Quest A;Quest B   Eigene Quests (per Klick in OBS abhaken)
     deaths=0        Tode-Quest ausblenden (nur ohne hc)
-    panel=0 / xp=0 / toast=0   Einzelne Elemente ausblenden
+    panel=0 / xp=0 / toast=0   Einzelne Elemente ausblenden (toast=0 schaltet auch Event-Feed + Sounds ab)
+    sound=0         Toasts ohne Ton
     panelY=420      Y-Position des Quest-Panels
     side=right      Quest-Panel rechts statt links
     start=19:30     /played-Startzeit (Standard: Laden der Quelle)
@@ -51,6 +56,9 @@
   const MAX_LVL = parseInt(P.get('max'), 10) || 60;
   const POLL_MS = Math.max(5, parseInt(P.get('poll'), 10) || 10) * 1000;
   const TOASTS  = P.get('toast') !== '0';
+  const SOUNDS  = P.get('sound') !== '0';
+  // Toasts, Event-Feed und Sounds laufen nur dort, wo der Toast sichtbar ist (sonst bei mehreren Quellen mehrfach)
+  const SHOWS_TOASTS = !PART || PART === 'toast';
 
   const OPT = {
     subQuest:    B.subQuest !== '0',
@@ -344,22 +352,30 @@
   }
   const bitsQuality = b => b >= 10000 ? 'legendary' : b >= 1000 ? 'epic' : b >= 100 ? 'rare' : 'uncommon';
 
+  // Item-Darstellung pro Event-Typ (gemeinsam für Beute-Liste und Toasts)
+  const LOOT = {
+    follow:  { icon: '✦', img: 'achievement_reputation_01',      item: 'Gefährte' },
+    sub:     { icon: '⚜', img: 'spell_holy_sealofrighteousness', item: 'Treuesiegel' },
+    giftsub: { icon: '✉', img: 'inv_misc_gift_02',               item: 'Geschenkte Siegel' },
+    cheer:   { icon: '◆', img: 'inv_misc_gem_sapphire_02',       item: 'Bitkristall' },
+    raid:    { icon: '⚔', img: 'inv_bannerpvp_02',               item: 'Kriegsbande' },
+  };
+
+  // Beute-Liste aus /api/public/labels — nur Anzeige, die Toasts kommen aus dem Event-Feed
   function lootFrom(d) {
     const out = [];
     if (!d) return out;
-    if (d.lastRaid)    out.push({ key: 'raid',  q: 'legendary', icon: '⚔', img: 'inv_bannerpvp_02',
-                                  item: 'Kriegsbande', who: d.lastRaid.name, meta: `${fmt(d.lastRaid.viewers)} Krieger` });
-    if (d.lastGiftSub) out.push({ key: 'gift',  q: 'epic', icon: '✉', img: 'inv_misc_gift_02',
-                                  item: 'Geschenkte Siegel', who: d.lastGiftSub.name, meta: `×${d.lastGiftSub.count}` });
+    if (d.lastRaid)    out.push({ key: 'raid', ...LOOT.raid, q: 'legendary',
+                                  who: d.lastRaid.name, meta: `${fmt(d.lastRaid.viewers)} Krieger` });
+    if (d.lastGiftSub) out.push({ key: 'giftsub', ...LOOT.giftsub, q: 'epic',
+                                  who: d.lastGiftSub.name, meta: `×${d.lastGiftSub.count}` });
     if (d.lastSub) {
       const [q, t] = subQuality(d.lastSub.tier);
-      out.push({ key: 'sub', q, icon: '⚜', img: 'spell_holy_sealofrighteousness',
-                 item: 'Treuesiegel', who: d.lastSub.name, meta: t });
+      out.push({ key: 'sub', ...LOOT.sub, q, who: d.lastSub.name, meta: t });
     }
-    if (d.lastCheer)   out.push({ key: 'cheer', q: bitsQuality(d.lastCheer.bits), icon: '◆', img: 'inv_misc_gem_sapphire_02',
-                                  item: 'Bitkristall', who: d.lastCheer.name, meta: `${fmt(d.lastCheer.bits)} Bits` });
-    if (d.lastFollower) out.push({ key: 'follow', q: 'uncommon', icon: '✦', img: 'achievement_reputation_01',
-                                   item: 'Gefährte', who: d.lastFollower, meta: '' });
+    if (d.lastCheer)   out.push({ key: 'cheer', ...LOOT.cheer, q: bitsQuality(d.lastCheer.bits),
+                                  who: d.lastCheer.name, meta: `${fmt(d.lastCheer.bits)} Bits` });
+    if (d.lastFollower) out.push({ key: 'follow', ...LOOT.follow, q: 'uncommon', who: d.lastFollower, meta: '' });
     return out.sort((a, b) => RANK[b.q] - RANK[a.q]);
   }
 
@@ -367,22 +383,8 @@
   function onLabels(d) {
     const loot = lootFrom(d);
     const sig  = Object.fromEntries(loot.map(l => [l.key, `${l.who}|${l.meta}`]));
-    const fresh = new Set();
-    if (prevLoot) {
-      loot.forEach(l => {
-        if (prevLoot[l.key] !== sig[l.key]) {
-          fresh.add(l.key);
-          const raid = l.key === 'raid';
-          toast({
-            kind: raid ? 'raid' : 'loot', q: l.q, icon: l.icon, img: l.img,
-            head: raid ? 'Verstärkung für die Allianz!' : 'Beute erhalten',
-            item: `[${l.item}]`,
-            who: `von <b>${esc(l.who)}</b>${l.meta ? ' · ' + esc(l.meta) : ''}`, html: true,
-            ms: raid ? 7000 : 5500,
-          });
-        }
-      });
-    }
+    // Geänderte Einträge kurz aufleuchten lassen (kein Toast)
+    const fresh = new Set(prevLoot ? loot.filter(l => prevLoot[l.key] !== sig[l.key]).map(l => l.key) : []);
     prevLoot = sig;
     $('loot').innerHTML = loot.length
       ? loot.map(l => `
@@ -393,6 +395,43 @@
             ${l.meta ? `<span class="meta">${esc(l.meta)}</span>` : ''}
           </li>`).join('')
       : '<li class="empty">Noch keine Beute …</li>';
+  }
+
+  // Toast aus einem Event des Streambot-Feeds: { id, type, username, amount, tier, message, created_at }
+  // amount = Bits (cheer), Zuschauer (raid), Anzahl (giftsub), Monate (resub)
+  function eventToast(ev) {
+    const who    = `<b>${esc(ev.username || 'Anonym')}</b>`;
+    const amount = Number(ev.amount) || 0;
+    const base = (type, q, extra) => ({
+      ...LOOT[type], q, kind: 'loot', head: 'Beute erhalten', item: `[${LOOT[type].item}]`,
+      html: true, sound: ev.type, ...extra,
+    });
+    switch (ev.type) {
+      case 'follow':
+        return base('follow', 'uncommon', { who: `von ${who}` });
+      case 'sub': {
+        const [q, t] = subQuality(ev.tier);
+        return base('sub', q, { who: `von ${who} · ${t}` });
+      }
+      case 'resub': {
+        const [q, t] = subQuality(ev.tier);
+        return base('sub', q, { who: `von ${who} · ${amount ? `${amount} Monate · ` : ''}${t}` });
+      }
+      case 'giftsub':
+        return base('giftsub', 'epic', { who: `von ${who} · ×${amount}` });
+      case 'cheer':
+        return base('cheer', bitsQuality(amount), { who: `von ${who} · ${fmt(amount)} Bits` });
+      case 'raid':
+        return base('raid', 'legendary', {
+          kind: 'raid', head: 'Verstärkung für die Allianz!', who: `${who} · ${fmt(amount)} Krieger`, ms: 7000,
+        });
+      default:
+        return null;
+    }
+  }
+  function handleEvent(ev) {
+    const t = eventToast(ev);
+    if (t) toast(t);
   }
 
   // ── Stats (Follower, Subs, Tode, Live) ──
@@ -460,7 +499,7 @@
   const queue = [];
   let busy = false;
   function toast(t) {
-    if (!TOASTS) return;
+    if (!TOASTS || !SHOWS_TOASTS) return;
     queue.push(t);
     if (!busy) nextToast();
   }
@@ -476,6 +515,7 @@
     if (t.html) $('tWho').innerHTML = t.who; else $('tWho').textContent = t.who;
     void el.offsetWidth;
     el.classList.add('show');
+    if (t.sound) playSound(t.sound);   // Ton genau dann, wenn der Toast erscheint
     if (['epic', 'legendary', 'quest'].includes(t.q) || t.kind === 'ding') el.classList.add('shine');
     setTimeout(() => {
       el.classList.remove('show');
@@ -498,6 +538,58 @@
     if (lb.status === 'fulfilled') onLabels(lb.value);
   }
 
+  // ── Sounds aus der Alert-Konfiguration des Streambots (ein <audio>-Element, wird wiederverwendet) ──
+  let alertCfg = {};
+  const SOUND_KEY = {
+    follow: 'alert_sound_follow', sub: 'alert_sound_sub', resub: 'alert_sound_sub',
+    giftsub: 'alert_sound_giftsub', cheer: 'alert_sound_cheer', raid: 'alert_sound_raid',
+  };
+  const audioEl = document.createElement('audio');
+  audioEl.preload = 'auto';
+  document.body.appendChild(audioEl);
+  // Im normalen Browser blockiert Autoplay bis zur ersten Interaktion (OBS erlaubt Autoplay)
+  document.addEventListener('click', () => { audioEl.play().then(() => audioEl.pause()).catch(() => {}); }, { once: true });
+
+  async function loadAlertConfig() {
+    try { alertCfg = (await getJSON('/api/public/alert-config')) || {}; } catch {}
+  }
+  function playSound(type) {
+    if (!SOUNDS || alertCfg.alert_sound_enabled !== '1') return;
+    const url = alertCfg[SOUND_KEY[type]];
+    if (!url) return;
+    try {
+      audioEl.src = new URL(url, (API || location.origin) + '/').href;   // relative URLs gegen die Streambot-Adresse
+      const vol = parseInt(alertCfg.alert_sound_volume, 10);
+      audioEl.volume = Math.min(1, Math.max(0, (Number.isFinite(vol) ? vol : 70) / 100));
+      const p = audioEl.play();
+      if (p && p.catch) p.catch(() => {});
+    } catch {}
+  }
+
+  // ── Event-Feed (wie alerts.html): Start-ID holen, dann alle 2 s neue Events abholen ──
+  let lastEventId = null;   // null = Start-ID noch unbekannt → noch keine Events abholen (sonst kämen alte erneut)
+  let eventsBusy  = false;
+  async function pollEvents() {
+    if (eventsBusy) return;   // langsame Antwort → keine überlappenden Abfragen (sonst doppelte Toasts)
+    eventsBusy = true;
+    try {
+      if (lastEventId === null) {
+        const { id } = await getJSON('/api/public/events/latest-id');
+        lastEventId = Number(id) || 0;
+      } else {
+        const list = await getJSON(`/api/public/events?since=${lastEventId}`);
+        for (const ev of Array.isArray(list) ? list : []) {
+          const id = Number(ev.id) || 0;
+          if (id <= lastEventId) continue;   // schon gezeigt
+          lastEventId = id;
+          handleEvent(ev);
+        }
+      }
+    } catch {} finally {
+      eventsBusy = false;
+    }
+  }
+
   // ── Demo: Fake-Daten + Event-Simulation ──
   function runDemo() {
     const s  = { live: true, followers: 496, subs: 23, deaths: HC ? 0 : 2 };
@@ -511,19 +603,29 @@
     onStats({ ...s });
     onLabels(JSON.parse(JSON.stringify(lb)));
 
+    // Jeder Schritt ändert die Daten und schickt ein Event wie der echte Feed
     const steps = [
-      () => { s.followers += 1; lb.lastFollower = 'Kobold_Kurt'; },
-      () => { s.subs += 1; lb.lastSub = { name: 'Zwergenzorn', tier: 2 }; },
-      () => { lb.lastRaid = { name: 'Tavernentrupp', viewers: 87 }; },
-      () => { s.followers += 3; lb.lastFollower = 'Runenratte'; },
-      () => { s.deaths += 1; },
-      () => { lb.lastGiftSub = { name: 'Lisa_TV', count: 10 }; s.subs += 10; },
-      () => { lb.lastCheer = { name: 'Goldgräber', bits: 12000 }; },
+      () => { s.followers += 1; lb.lastFollower = 'Kobold_Kurt';
+              return { type: 'follow', username: 'Kobold_Kurt' }; },
+      () => { s.subs += 1; lb.lastSub = { name: 'Zwergenzorn', tier: '2' };
+              return { type: 'sub', username: 'Zwergenzorn', tier: '2' }; },
+      () => { lb.lastRaid = { name: 'Tavernentrupp', viewers: 87 };
+              return { type: 'raid', username: 'Tavernentrupp', amount: 87 }; },
+      () => { s.followers += 3; lb.lastFollower = 'Runenratte';
+              return { type: 'follow', username: 'Runenratte' }; },
+      () => { s.deaths += 1; return null; },
+      () => { lb.lastGiftSub = { name: 'Lisa_TV', count: 10 }; s.subs += 10;
+              return { type: 'giftsub', username: 'Lisa_TV', amount: 10, tier: '1' }; },
+      () => { lb.lastCheer = { name: 'Goldgräber', bits: 12000 };
+              return { type: 'cheer', username: 'Goldgräber', amount: 12000 }; },
+      () => { lb.lastSub = { name: 'Grumpfbart', tier: '1' };
+              return { type: 'resub', username: 'Grumpfbart', amount: 14, tier: '1' }; },
     ];
     let i = 0;
     setInterval(() => {
-      steps[i % steps.length]();
+      const ev = steps[i % steps.length]();
       i++;
+      if (ev) handleEvent(ev);
       onStats({ ...s });
       onLabels(JSON.parse(JSON.stringify(lb)));
     }, 7000);
@@ -536,5 +638,11 @@
   } else {
     poll();
     setInterval(poll, POLL_MS);
+    if (SHOWS_TOASTS && TOASTS) {
+      loadAlertConfig();
+      setInterval(loadAlertConfig, 60000);
+      pollEvents();                      // holt zuerst die Start-ID (latest-id)
+      setInterval(pollEvents, 2000);
+    }
   }
 })();
