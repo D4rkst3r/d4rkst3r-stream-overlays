@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>WoW Forever Overlay — D4RKST3R</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&display=swap" rel="stylesheet">
+  <!-- WoW Forever Overlay (1920×1080, transparent) — Logik + alle URL-Parameter: js/wow-hud.js -->
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange: #ff8800;              /* D4RKST3R Brand = Legendär */
+      --gold:   #f2d28a;              /* Pergament-Gold für Titel */
+      --quest:  #ffd36b;
+      --text:   #ece6da;
+      --muted:  rgba(236,230,218,0.55);
+      --bg:     rgba(8,7,10,0.84);
+      --edge:   rgba(255,136,0,0.38);
+      --alliance:      #3a7be0;       /* Allianz-Blau (aufgehellt für dunklen Grund) */
+      --alliance-deep: #12306a;
+
+      /* Item-Qualitäten */
+      --q-common:    #ece6da;
+      --q-uncommon:  #3cff2e;
+      --q-rare:      #3d9bff;
+      --q-epic:      #b45cff;
+      --q-legendary: #ff8800;
+      --q-dead:      #ff4a3d;
+    }
+
+    body {
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: transparent;
+      font-family: 'Courier New', monospace;
+      color: var(--text);
+      position: relative;
+    }
+
+    .q-common    { color: var(--q-common); }
+    .q-uncommon  { color: var(--q-uncommon); }
+    .q-rare      { color: var(--q-rare); }
+    .q-epic      { color: var(--q-epic); }
+    .q-legendary { color: var(--q-legendary); }
+    .q-dead      { color: var(--q-dead); }
+    .q-quest     { color: var(--quest); }
+
+    /* ═══════════ HUD: Plakette oben mittig ═══════════ */
+    .hud {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 560px;
+      z-index: 10;
+    }
+
+    .plaque {
+      position: relative;
+      height: 70px;
+      /* Rahmen: links D4RKST3R-Orange → Gold → rechts Allianz-Blau */
+      background: linear-gradient(90deg, rgba(255,136,0,0.9), rgba(242,210,138,0.7) 50%, rgba(58,123,224,0.95));
+      clip-path: polygon(0 0, 100% 0, 100% 62%, calc(100% - 26px) 100%, 26px 100%, 0 62%);
+    }
+    .plaque-inner {
+      position: absolute;
+      inset: 0 1px 1px 1px;
+      background:
+        radial-gradient(ellipse at 0% 0%,   rgba(255,136,0,0.12), transparent 55%),
+        radial-gradient(ellipse at 100% 0%, rgba(58,123,224,0.14), transparent 55%),
+        linear-gradient(180deg, rgba(16,12,14,0.94), rgba(6,5,8,0.92));
+      clip-path: polygon(0 0, 100% 0, 100% 62%, calc(100% - 26px) 100%, 26px 100%, 0 62%);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 66px 10px 66px;
+    }
+    body.no-crest .plaque-inner { padding-right: 36px; }
+
+    .ident { flex: 1; min-width: 0; }
+    .name {
+      font-family: 'Cinzel', Georgia, serif;
+      font-weight: 800;
+      font-size: 23px;
+      letter-spacing: 5px;
+      line-height: 1.1;
+      background: linear-gradient(180deg, #ffe2b0 10%, #ff8800 75%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 0 6px rgba(255,136,0,0.35));
+    }
+    .charline {
+      margin-top: 4px;
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .hc-tag {
+      display: inline-block;
+      margin-right: 8px;
+      padding: 0 5px;
+      border: 1px solid rgba(255,74,61,0.6);
+      color: var(--q-dead);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .class-icon {
+      width: 16px;
+      height: 16px;
+      margin-right: 6px;
+      vertical-align: -3px;
+      filter: drop-shadow(0 0 3px rgba(0,0,0,0.9));
+    }
+    .charline .cls { font-weight: 700; }
+
+    .vsep {
+      width: 1px;
+      height: 34px;
+      background: linear-gradient(transparent, rgba(255,136,0,0.5), transparent);
+    }
+
+    .status {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 5px;
+    }
+    .live {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #ff5555;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+    .live .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #ff3333;
+      box-shadow: 0 0 8px #ff3333;
+      animation: livePulse 1.5s ease-in-out infinite;
+    }
+    .live.off { color: var(--muted); }
+    .live.off .dot { background: #666; box-shadow: none; animation: none; }
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; }
+      50%      { opacity: 0.3; }
+    }
+    .played { font-size: 12px; color: var(--muted); white-space: nowrap; }
+    .played b { color: var(--text); font-weight: 700; }
+
+    /* Portrait im Unit-Frame-Stil */
+    .portrait {
+      position: absolute;
+      left: -34px;
+      top: 2px;
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      background: #08070a;
+      border: 2px solid var(--orange);
+      box-shadow:
+        0 0 0 3px rgba(8,7,10,0.9),
+        0 0 0 4px rgba(255,136,0,0.35),
+        0 0 18px rgba(255,136,0,0.45);
+      cursor: pointer;
+      user-select: none;
+      z-index: 3;
+    }
+    .portrait img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center;
+      transition: filter 1s;
+    }
+    .lvl {
+      position: absolute;
+      left: -6px;
+      bottom: -4px;
+      min-width: 30px;
+      height: 30px;
+      padding: 0 6px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at 50% 35%, #2c1a07, #0a0705);
+      border: 2px solid var(--orange);
+      box-shadow: 0 0 10px rgba(255,136,0,0.5);
+      font-family: 'Cinzel', Georgia, serif;
+      font-weight: 800;
+      font-size: 14px;
+      color: var(--gold);
+    }
+    .lvl.pop { animation: lvlPop 0.7s ease-out; }
+    @keyframes lvlPop {
+      0%   { transform: scale(1); }
+      35%  { transform: scale(1.5); box-shadow: 0 0 26px var(--orange); }
+      100% { transform: scale(1); }
+    }
+
+    /* Allianz-Wappen rechts (Spiegel zum Portrait) */
+    .crest {
+      position: absolute;
+      right: -34px;
+      top: 2px;
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at 50% 40%, #1b3f86, #0a1430 70%, #05080f);
+      border: 2px solid var(--alliance);
+      box-shadow:
+        0 0 0 3px rgba(8,7,10,0.9),
+        0 0 0 4px rgba(242,210,138,0.45),
+        0 0 18px rgba(58,123,224,0.55);
+      z-index: 3;
+    }
+    .crest img {
+      width: 74%;
+      height: 74%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 6px rgba(242,210,138,0.45));
+    }
+    body.no-crest .crest { display: none; }
+
+    /* WoW-Forever-Logo unten rechts (Senderlogo-Stil, zwischen Quest-Tracker und Taschen) */
+    .game-logo {
+      position: absolute;
+      right: 28px;
+      bottom: 92px;
+      width: 190px;
+      opacity: 0.92;
+      filter:
+        drop-shadow(0 4px 10px rgba(0,0,0,0.75))
+        drop-shadow(0 0 14px rgba(58,123,224,0.3));
+      z-index: 10;
+    }
+
+    body.fallen .portrait { border-color: #6b6b6b; box-shadow: 0 0 0 3px rgba(8,7,10,0.9), 0 0 14px rgba(255,74,61,0.4); }
+    body.fallen .portrait img { filter: grayscale(1) brightness(0.55); }
+    body.fallen .lvl { border-color: #6b6b6b; color: #aaa; box-shadow: none; }
+
+    /* XP-Leiste = Follower-Ziel */
+    .xp {
+      position: relative;
+      width: 450px;
+      height: 18px;
+      margin: 8px auto 0;
+      background: rgba(8,7,10,0.86);
+      border: 1px solid var(--edge);
+      overflow: hidden;
+    }
+    .xp-fill {
+      position: absolute;
+      top: 0; bottom: 0; left: 0;
+      width: 0%;
+      background: linear-gradient(90deg, #8a3d00, #ff8800 70%, #ffc266);
+      box-shadow: 0 0 10px rgba(255,136,0,0.5);
+      transition: width 1.4s cubic-bezier(.2,.8,.2,1);
+      overflow: hidden;
+    }
+    .xp-fill::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 80px;
+      left: -80px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+      animation: xpShimmer 6s ease-in-out infinite;
+    }
+    @keyframes xpShimmer {
+      0%, 70% { left: -80px; }
+      100%    { left: 100%; }
+    }
+    .xp-ticks {
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(90deg,
+        transparent 0, transparent calc(5% - 1px),
+        rgba(0,0,0,0.6) calc(5% - 1px), rgba(0,0,0,0.6) 5%);
+    }
+    .xp-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-shadow: 0 1px 2px #000, 0 0 4px #000, 0 0 2px #000;
+    }
+    .xp-label span { color: var(--gold); }
+    .xp.full { border-color: var(--orange); box-shadow: 0 0 14px rgba(255,136,0,0.5); }
+
+    /* ═══════════ Quest-Panel ═══════════ */
+    .panel {
+      position: absolute;
+      left: 24px;
+      top: 420px;
+      width: 350px;
+      padding: 14px 16px 12px;
+      background: var(--bg);
+      border: 1px solid var(--edge);
+      z-index: 10;
+    }
+    .panel.right { left: auto; right: 24px; }
+    .panel::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 12px; right: 12px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,200,120,0.6), transparent);
+    }
+    .orn {
+      position: absolute;
+      width: 8px; height: 8px;
+      background: var(--orange);
+      transform: rotate(45deg);
+      box-shadow: 0 0 8px var(--orange);
+    }
+    .orn.tl { top: -4px;    left: -4px; }
+    .orn.tr { top: -4px;    right: -4px; }
+    .orn.bl { bottom: -4px; left: -4px; }
+    .orn.br { bottom: -4px; right: -4px; }
+    .orn.tr, .orn.br { background: var(--alliance); box-shadow: 0 0 8px var(--alliance); }
+
+    .sec-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-family: 'Cinzel', Georgia, serif;
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .sec-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(242,210,138,0.5), transparent);
+    }
+    .sec-title + ul + .sec-title { margin-top: 14px; }
+
+    ul { list-style: none; }
+
+    .quest { margin-bottom: 11px; }
+    .quest:last-child { margin-bottom: 2px; }
+    .quest.custom { cursor: pointer; }
+    .q-head { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 7px; }
+    .q-title {
+      font-family: 'Cinzel', Georgia, serif;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--quest);
+      text-shadow: 0 1px 2px #000;
+    }
+    .q-tag   { font-size: 10px; letter-spacing: 1px; color: var(--muted); white-space: nowrap; }
+    .q-state { font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .q-obj {
+      margin-top: 3px;
+      padding-left: 12px;
+      font-size: 13px;
+      color: var(--text);
+    }
+    .q-obj::before { content: '- '; color: var(--muted); }
+    .q-bar {
+      height: 4px;
+      margin: 5px 0 0 12px;
+      background: rgba(255,255,255,0.08);
+    }
+    .q-bar i {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, #a34a00, var(--orange));
+      transition: width 1.2s ease-out;
+    }
+    .quest.custom .q-title::before { content: '◇ '; color: var(--muted); }
+    .quest.done .q-title { color: #c9f7a0; }
+    .quest.done.custom .q-title::before { content: '◆ '; color: var(--q-uncommon); }
+    .quest.done .q-state { color: var(--q-uncommon); }
+    .quest.done .q-obj,
+    .quest.done .q-bar { opacity: 0.55; }
+    .quest.failed .q-title { color: var(--q-dead); }
+    .quest.failed .q-state { color: var(--q-dead); }
+    .quest.failed .q-obj  { color: var(--muted); }
+    .quest.flash { animation: fresh 2.5s ease-out; }
+
+    .loot li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 3px 4px;
+      margin: 0 -4px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .loot li.fresh { animation: fresh 2.5s ease-out; }
+    @keyframes fresh {
+      0%   { background: rgba(255,255,255,0.18); }
+      100% { background: transparent; }
+    }
+    .ico {
+      flex-shrink: 0;
+      width: 24px; height: 24px;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      border: 1px solid currentColor;
+      background: radial-gradient(circle, rgba(255,255,255,0.08), rgba(0,0,0,0.65));
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.8);
+    }
+    .ico img, .t-ico img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+    .item { font-weight: 700; }
+    .who  { color: var(--text); overflow: hidden; text-overflow: ellipsis; }
+    .meta { margin-left: auto; padding-left: 8px; font-size: 11px; color: var(--muted); }
+    .loot .empty { color: var(--muted); font-size: 12px; }
+
+    /* ═══════════ Beute-Toast ═══════════ */
+    .toast {
+      position: absolute;
+      top: 116px;
+      left: 50%;
+      width: 440px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 18px 12px 12px;
+      background: rgba(8,7,10,0.9);
+      border: 1px solid currentColor;
+      box-shadow: 0 0 22px rgba(0,0,0,0.6);
+      opacity: 0;
+      transform: translate(-50%, -18px);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      overflow: hidden;
+      z-index: 20;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .toast.shine::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      left: -90px;
+      width: 60px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+      transform: skewX(-20deg);
+      animation: toastShine 1.4s 0.35s ease-out forwards;
+    }
+    @keyframes toastShine { to { left: 120%; } }
+    .t-ico {
+      flex-shrink: 0;
+      width: 54px; height: 54px;
+      display: grid;
+      place-items: center;
+      font-size: 28px;
+      border: 2px solid currentColor;
+      background: radial-gradient(circle, rgba(255,255,255,0.1), rgba(0,0,0,0.7));
+      box-shadow: 0 0 14px currentColor, inset 0 0 10px rgba(0,0,0,0.8);
+    }
+    .t-body { min-width: 0; }
+    .t-head {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .t-item {
+      margin-top: 2px;
+      font-family: 'Cinzel', Georgia, serif;
+      font-weight: 800;
+      font-size: 20px;
+      line-height: 1.15;
+      text-shadow: 0 0 12px currentColor;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .t-who { margin-top: 3px; font-size: 13px; color: var(--text); }
+
+    .hidden { display: none !important; }
+
+    /* ═══════════ Vorschau: Spiel-UI-Zonen ═══════════ */
+    .guide {
+      display: none;
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse at 50% 62%, #33402c 0%, #182016 50%, #07090a 100%);
+    }
+    body.guide-on .guide { display: block; }
+    .zone {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border: 1px dashed rgba(255,255,255,0.25);
+      background: rgba(255,255,255,0.03);
+      color: rgba(255,255,255,0.38);
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .guide-note {
+      position: absolute;
+      left: 50%;
+      top: 560px;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,0.3);
+      font-size: 13px;
+      letter-spacing: 2px;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Vorschau-Hintergrund mit Standard-UI-Zonen (nur demo/guide) -->
+  <div class="guide" id="guide">
+    <div class="zone" style="left:0;top:0;width:520px;height:110px">Spieler + Ziel</div>
+    <div class="zone" style="left:0;top:140px;width:200px;height:260px">Gruppe</div>
+    <div class="zone" style="left:1440px;top:0;width:480px;height:230px">Buffs + Minimap</div>
+    <div class="zone" style="left:1630px;top:260px;width:270px;height:380px">Quest-Tracker</div>
+    <div class="zone" style="left:16px;top:780px;width:450px;height:190px">Chat</div>
+    <div class="zone" style="left:560px;top:950px;width:800px;height:130px">Aktionsleisten + XP</div>
+    <div class="zone" style="left:1480px;top:1010px;width:440px;height:70px">Taschen + Menü</div>
+    <div class="guide-note">VORSCHAU · gestrichelt = Standard-Spiel-UI (ungefähr)</div>
+  </div>
+
+  <!-- PLAKETTE + XP -->
+  <div class="hud">
+    <div class="plaque">
+      <div class="plaque-inner">
+        <div class="ident">
+          <div class="name" id="name">D4RKST3R</div>
+          <div class="charline" id="charline">WoW Forever</div>
+        </div>
+        <div class="vsep"></div>
+        <div class="status">
+          <div class="live" id="live"><span class="dot"></span><span id="liveText">LIVE</span></div>
+          <div class="played">/played <b id="timer">0:00:00</b></div>
+        </div>
+      </div>
+    </div>
+    <div class="portrait" id="portrait" title="Klick: Level +1 · Rechtsklick: Level −1">
+      <img id="avatar" src="assets/cat_alliance_portrait.png" alt="D4RKST3R">
+      <span class="lvl" id="lvl">1</span>
+    </div>
+    <div class="crest" id="crest">
+      <img id="crestImg" alt="Allianz">
+    </div>
+    <div class="xp" id="xp">
+      <div class="xp-fill" id="xpFill"></div>
+      <div class="xp-ticks"></div>
+      <div class="xp-label" id="xpLabel">Gefolgschaft · —</div>
+    </div>
+  </div>
+
+  <!-- QUEST-PANEL -->
+  <aside class="panel" id="panel">
+    <span class="orn tl"></span><span class="orn tr"></span>
+    <span class="orn bl"></span><span class="orn br"></span>
+    <div class="sec-title">Stream-Quests</div>
+    <ul id="quests"></ul>
+    <div class="sec-title">Beute</div>
+    <ul class="loot" id="loot"><li class="empty">Noch keine Beute …</li></ul>
+  </aside>
+
+  <!-- WOW-FOREVER-LOGO -->
+  <img class="game-logo hidden" id="gameLogo" alt="World of Warcraft: Forever">
+
+  <!-- BEUTE-TOAST -->
+  <div class="toast" id="toast">
+    <div class="t-ico" id="tIco">✦</div>
+    <div class="t-body">
+      <div class="t-head" id="tHead">Beute erhalten</div>
+      <div class="t-item" id="tItem">[Gefährte]</div>
+      <div class="t-who"  id="tWho">—</div>
+    </div>
+  </div>
+
+  <script src="js/wow-hud.js"></script>
+</body>
+</html>
